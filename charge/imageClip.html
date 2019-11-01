@@ -1,0 +1,48 @@
+<script type="text/javascript">
+var FNImageClip;
+apiready = function(){
+    FNImageClip = api.require('FNImageClip');
+		FNImageClip.open({
+		    srcPath: api.pageParam.srcPath,
+		    mode: 'image',
+		    style: {
+		        mask: 'rgba(0,0,0,0.5)',
+		        clip: {
+		            w: 200,
+		            w: 200,
+		            x: (api.winWidth - 200) / 2,
+		            y: (api.winHeight - 300) / 2,
+		            borderColor: '#3C0',
+		            borderWidth: 2,
+		        }
+		    }
+		}, function(ret, err) {
+		    if (ret && ret.status) {
+		    	api.openFrame({
+		            name: 'imageClip',
+		            url: 'widget://charge/html/imageClip.html',
+		            rect: {
+		                x: 0,
+		                y: api.winHeight-60,
+		                w: api.winWidth,
+		                h: api.winHeight
+		            },
+		            bounces: false,
+		        });
+		    }
+		});
+}
+//保存裁剪，上传图片
+function imageClipSave(){
+  	FNImageClip.save(function(ret, err) {
+  	    if (ret) {
+            api.execScript({
+                name: 'userinfo',
+                frameName: 'userinfo',
+                script: 'setAvatar("'+ ret.destPath +'");'
+            });
+            api.closeWin();
+  	    }
+  	});
+}
+</script>

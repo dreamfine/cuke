@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="../css/swiper.css"/>
+      <style>
+        .aui-row-padded [class*=aui-col-xs-]{padding: 0.25rem}
+        .aui-ellipsis-1{height: 1.2rem}
+        .videoarea .actor-details {
+          width:97%;
+          height: 5rem;
+          margin: 0 0.2rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .videoarea .actor-details .touxiang {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 50%;
+          display: flex;
+          align-items: left;
+          justify-content: center;
+        }
+        .videoarea .actor-details .touxiang img {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 50%;
+        }
+        .videoarea .details {
+          color: white;
+          width: 85%;
+        }
+        .videoarea .details .introduce {
+          width: 100%;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          font-size: 14px;　
+        }
+        .videoarea .swiper{
+          width: 95%;
+          height: 9rem;
+        }
+        .videoarea .swiper-wrapper {
+          width: 100%;
+          margin: 0 auto;
+        }
+        .videoarea .swiper-slide {
+          width: 25%;
+          color: white;
+          position: relative;
+        }
+        .videoarea .swiper-slide img {
+          width: 100%;
+          height: 6rem;
+          border-radius: 5px;
+        }
+        .videoarea .swiper-slide p{
+          width: 100%;
+          height: 1.5rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: white;
+          line-height: 1.5rem;
+        }
+        .videoarea .swiper-slide span {
+          position: absolute;
+          right: 0.3rem;
+          bottom: 1.54rem;
+        }
+        #header{background-color: #323232}
+      </style>
+  </head>
+  <body style="background-color: #323232;">
+      <section id="swiper" class="swiper-container">
+          <div class="swiper-wrapper">
+              <div v-for="v in it" @click="openWin('web', {title:v.title,url:v.linkurl})" class="swiper-slide" tapmode>
+                  <img :data-src="v.picurl" class="swiper-lazy" />
+              </div>
+          </div>
+
+      </section>
+
+      <section class="aui-content aui-margin-5" id="channellist">
+        <div class="main">
+            <div class="title">
+              <span>热门女优</span>
+              <span @click="openWin('all', {title:'全部女优',type:2})">更多></span>
+            </div>
+            <ul class="liebiao">
+              <li v-for="(item,index) in list" :key="index" @click="openWin('list2', {tid:item.id,title:item.title})">
+                <img :src="item.picurl" alt="">
+                <i>{{item.title}}</i>
+              </li>
+            </ul>
+        </div>
+      </section>
+      <div id="videoarea">
+        <section class="videoarea"  v-for="item in list">
+          <!-- 演员介绍部分 -->
+          <div class="actor-details">
+            <!-- 头像 -->
+            <div class="touxiang">
+              <img :src="item.picurl">
+            </div>
+            <!-- 详情 -->
+            <div class="details">
+              <p class="name" style="color:#FFFFFF;">{{item.title}}/共{{item.length}}部影片</p>
+              <p class="introduce" style="color:#cacaca;">{{item.desc}}</p>
+            </div>
+          </div>
+          <!-- 底部滑动部分(轮播图) -->
+          <div class="swiper-container1 swiper">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide" v-for="it in item.data" @click="openPlayer(it.id,it.tid, it.price)">
+                <img :src="it.picurl">
+                <p class="title" style="color:#cacaca;">{{it.title}}</p>
+                <!-- <span>9.4</span> -->
+              </div>
+            </div>
+        </div>
+        </section>
+      </div>
+
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/swiper.js"></script>
+  <script type="text/javascript" src="../script/echo.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+      apiready = function(){
+          api.parseTapmode();
+          //pullRefresh();
+          //轮播图
+          var swiper = new Vue({
+              el: '#swiper',
+              data: {it: []},
+              mounted: function(){
+                setTimeout(function(){
+                  swiper.it = api.pageParam.adv2;
+                },20)
+              },
+              updated: function(){
+                  new Swiper('#swiper', {
+                      loop: true,
+                      autoplay: true,
+                      lazy: {loadPrevNext: true},
+                  });
+              },
+          });
+          //频道
+          var channellist = new Vue({
+              el: '#channellist',
+              data: {list: []},
+              mounted: function(){
+                setTimeout(function(){
+                  channellist.list = api.pageParam.videotype2;
+                },20)
+              }
+          });
+          //频道
+          var videoarea = new Vue({
+              el: '#videoarea',
+              data: {list: []},
+              mounted:function(){
+                setTimeout(function(){
+                  videoarea.list = api.pageParam.videolist3;
+                  //console.log(JSON.stringify(videoarea.list))
+                },20)
+              },
+              updated: function(){
+                new Swiper('.swiper-container1', {
+                slidesPerView: 'auto',
+                spaceBetween: '3%',
+                pagination: {
+                  el: '.swiper-pagination',
+                  clickable: true,
+                },
+                });
+              }
+            })
+            //下拉刷新
+            api.refreshHeaderLoadDone();
+            api.setCustomRefreshHeaderInfo({
+                bgColor: '#323232',
+                image: {
+                    pull: [
+                    'widget://charge/image/loading1.png' ,
+                    'widget://charge/image/loading2.png' ,
+                    'widget://charge/image/loading3.png' ,
+                    'widget://charge/image/loading4.png' ,
+                    'widget://charge/image/loading5.png' ,
+                    'widget://charge/image/loading6.png' ,
+                    'widget://charge/image/loading7.png' ,
+                    'widget://charge/image/loading8.png'
+                    ],
+                    load: [ 'widget://charge/image/loading1.png'  ],
+                }
+            }, function() {
+                $api.get('app/videotype/id,title,picurl/8/0/id/desc?type=2&flag=1',function(json){
+                    channellist.list = json;
+                    //console.log(JSON.stringify(json))
+                });
+                var url = 'app/videolist3/id,title,picurl,price,tid/20/0/id/desc?type=2&flag2=1';
+                $api.get(url, function(json){
+                  videoarea.list  = json;
+                });
+                api.refreshHeaderLoadDone();
+            });
+      };
+  </script>
+  </html>

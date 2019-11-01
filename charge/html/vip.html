@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+      <style>
+      .aui-border-t1{border-top: 3px solid #ecb780}
+      .aui-border-t2{border-top: 3px solid #be32c7}
+      .aui-border-t3{border-top: 3px solid #232dab}
+      .aui-border-t4{border-top: 3px solid #08a214}
+      </style>
+  </head>
+  <body>
+      <section class="aui-content-padded">
+          <div class="aui-card-list aui-border-t1">
+              <div class="aui-card-list-header">
+                  购买说明
+              </div>
+              <div class="aui-card-list-content-padded" id="viptips"></div>
+          </div>
+      </section>
+      <section class="aui-content-padded">
+          <div class="aui-card-list aui-border-t2">
+              <div class="aui-card-list-header">
+                  我的账户
+              </div>
+              <div class="aui-card-list-content-padded">
+                  <ul class="aui-list aui-list-in">
+                      <li class="aui-list-item aui-padded-10">
+                          <div class="aui-list-item-inner">
+                              <div class="aui-list-item-title">金币：<span class="aui-text-info" id="money">0</span></div>
+                              <div class="aui-list-item-right"><div class="aui-btn aui-btn-info" onclick="openWin('buy', true)" tapmode>充值</div></div>
+                          </div>
+                      </li>
+                      <li class="aui-list-item">
+                          <div class="aui-list-item-inner">
+                              <div class="aui-list-item-title">VIP到期：<span class="aui-text-info" id="viptime">未开通</span></div>
+                          </div>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </section>
+      <section id="vip" class="aui-content-padded">
+          <div class="aui-card-list aui-border-t3">
+              <div class="aui-card-list-header">
+                  VIP资格
+              </div>
+              <div class="aui-card-list-content-padded">
+                  <ul class="aui-list aui-select-list">
+                      <li v-if="it.day" class="aui-list-item aui-padded-10" @click="setmoney('day')">
+                          <div class="aui-list-item-label">
+                              <input id="day" class="aui-radio" name="active" type="radio" value="day" tapmode>
+                          </div>
+                          <label for="day" class="aui-list-item-inner">
+                              <div v-text="'体验价：'+it.day+'元 / 天'"></div>
+                              <div v-text="'体验价：'+it.day*10+'金币 / 天'"></div>
+                          </label>
+                      </li>
+                      <li class="aui-list-item aui-padded-10" @click="setmoney('month')">
+                          <div class="aui-list-item-label">
+                              <input id="month" class="aui-radio" name="active" type="radio" value="month" checked tapmode>
+                          </div>
+                          <label for="month" class="aui-list-item-inner">
+                              <div v-text="'包月价：'+it.month+'元 / 月'"></div>
+                              <div v-text="'包月价：'+it.month*10+'金币 / 月'"></div>
+                          </label>
+                      </li>
+                      <li class="aui-list-item aui-padded-10" @click="setmoney('year')">
+                          <div class="aui-list-item-label">
+                              <input id="year" class="aui-radio" name="active" type="radio" value="year" tapmode>
+                          </div>
+                          <label class="aui-list-item-inner" for="year">
+                              <div v-text="'包年价：'+it.year+'元 / 年'"></div>
+                              <div v-text="'包年价：'+it.year*10+'金币 / 年'"></div>
+                          </label>
+                      </li>
+                      <li class="aui-list-item aui-padded-10" @click="setmoney('yj')">
+                          <div class="aui-list-item-label">
+                              <input id="yj" class="aui-radio" name="active" type="radio" value="yj" tapmode>
+                          </div>
+                          <label class="aui-list-item-inner">
+                              <div v-text="'永久价：'+it.yj+'元'"></div>
+                              <div v-text="'永久价：'+it.yj*10+'金币'"></div>
+                          </label>
+                      </li>
+                  </ul>
+              </div>
+          </div>
+      </section>
+      <section class="aui-content-padded">
+          <div class="aui-card-list aui-border-t4">
+              <div class="aui-card-list-header">
+                  购买数量
+              </div>
+              <div class="aui-card-list-content-padded">
+                  <div class="aui-tab" id="tab">
+                      <div class="aui-tab-item aui-font-size-18 aui-active" tapmode>1</div>
+                      <div class="aui-tab-item aui-font-size-18" tapmode>2</div>
+                      <div class="aui-tab-item aui-font-size-18" tapmode>3</div>
+                      <div class="aui-tab-item aui-font-size-18" tapmode>4</div>
+                      <div class="aui-tab-item aui-font-size-18" tapmode>5</div>
+                  </div>
+              </div>
+          </div>
+      </section>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/tab.js"></script>
+  <script type="text/javascript" src="../script/toast.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+  apiready = function(){
+      api.parseTapmode();
+      var price = 0;
+      var num = 1;
+      var active = '';
+      var vip = new Vue({
+          el: '#vip',
+          data: {
+              it: {day:0, month:0, year:0}
+          },
+          mounted: function(){
+              $api.get('my/vip', function(json){
+                  vip.it = json.vip;
+                  vip.setmoney('month');
+                  $api.html($api.byId('viptips'), json.viptips.replace(/\n/g, '<br>'));
+                  $api.text($api.byId('money'), json.money);
+                  $api.text($api.byId('viptime'), json.viptime);
+              });
+          },
+          methods: {
+  						setmoney: function(id){
+                  price = vip.it[id];
+                  active = id;
+                  api.execScript({
+                      name: 'vip',
+                      script: 'setTotal('+ price +','+ num +', "'+ active +'");'
+                  });
+  						},
+  				}
+      });
+      new auiTab({
+          element: $api.byId('tab')
+      },function(ret){
+          num = ret.index+1
+          api.execScript({
+              name: 'vip',
+              script: 'setTotal('+ price +','+ num +', "'+ active +'");'
+          });
+      });
+      api.addEventListener({
+          name: 'reload'
+      }, function(ret, err){
+          if(ret){
+              location.reload();
+          }
+      });
+  };
+  function toast(status, msg){
+      var toast = new auiToast();
+      if(status == 1)
+          toast.success({ title: msg });
+      else
+      if(status == 2)
+          toast.loading({ title: msg });
+      else
+      if(status == 3)
+          toast.hide();
+      else
+          toast.fail({title: msg});
+  }
+  </script>
+  </html>

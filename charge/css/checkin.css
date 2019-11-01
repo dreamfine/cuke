@@ -1,0 +1,155 @@
+.btn.focus, .btn:focus, .btn:hover{color:#fff}
+/*字体大小*/
+.font10{font-size:10px;}
+.font12{font-size:12px;}
+.font13{font-size:13px;}
+.font14{font-size:14px;}
+.font15{font-size:15px;}
+.font16{font-size:16px;}
+.font18{font-size:18px;}
+.font20{font-size:20px;}
+.font42{font-size:42px;}
+.font2m{font-size: 2em;}
+.font3m{font-size: 3em;}
+/*字体颜色*/
+.text-red{color:#df493b;}
+.text-white{color:#fff;}
+.text-grey{color:#ccc;}
+.text-grey1{color:#9e9ea1;}
+.text1{color:#50d2c2;}
+.text-f36{color:#ff3366;}
+.colorb5{color:#b5b5b5;}
+.colorstar {color:#ff4444;}
+.color29{color:#292929;}
+.text-orange{color:#ffa15c;}
+.text-blue{color:#41a4e3;}
+.text-jiangjiu{color:#da5141;}/* 广东酱酒专家 */
+.texthidden{text-overflow:ellipsis;white-space: nowrap;overflow: hidden;}/* 1行 */
+.rows2{display:-webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical; overflow: hidden;}/* 2行 */
+/*高度和行高*/
+.h30{height:30px;}
+.h35{height:35px;}
+.h43{height:43px;line-height: 43px;}
+.h48{height:48px;line-height: 48px;}
+.h50{height:50px;line-height: 50px;}
+.h70{height:70px;}
+.lh25{line-height: 25px;}
+.lh33{line-height: 33px;}
+.lh34{line-height: 34px;}
+.lh47{line-height: 47px;}
+/*边框样式*/
+.bordernone{border:none;}
+.border0{border:none;}
+.border{border: 1px solid #e8e9eb;}
+.bordert{border-top: 1px solid #e8e9eb;}
+.borderr{border-right: 1px solid #e8e9eb;}
+.borderb{border-bottom: 1px solid #e8e9eb;}
+.borderl{border-left:1px solid #e8e9eb;}
+.bordertb{border-top:1px solid #e8e9eb;border-bottom:1px solid #e8e9eb;}
+.btn-simple{width:100%;border-radius:0;border:none;}
+.bradius3{border-radius:3px;}
+.bradius20{border-top-left-radius:20px;border-bottom-left-radius:20px;border-top-right-radius:20px;border-bottom-right-radius:20px;}
+.bg-success1{background: #66c300;}
+/*delete*/
+.bordertop{border-top: 1px solid #e8e9eb;}
+.borderright{border-right: 1px solid #e8e9eb;}
+.borderbottom{border-bottom: 1px solid #e8e9eb;}
+/* 内外边距 */
+.clearMargin{margin:0;}
+.clearPadding{padding:0;}
+.clearPtb{padding-top:0px;padding-bottom:0;}
+.clearMb{margin-bottom:0;}
+.clearPb{padding-bottom:0;}
+/* 内边距 */
+.padding5{padding:5px;}
+.padding10{padding:10px;}
+.padding15{padding:15px;}
+.p15{padding:15px;}
+.pt10b3{padding-top:10px;padding-bottom:3px;}
+.ptb5{padding-top: 5px;padding-bottom: 5px;}
+.ptb6{padding-top: 6px;padding-bottom: 6px;}
+.ptb10{padding-top:10px;padding-bottom: 10px;}
+.ptb15{padding-top: 15px;padding-bottom: 15px;}
+.ptb20{padding-top: 20px;padding-bottom: 20px;}
+.ptb30{padding-top:30px;padding-bottom:30px;}
+.plr0{padding-left:0px;padding-right:0px;}
+.plr10{padding-left:10px;padding-right:10px;}
+.plr15{padding-left:15px;padding-right:15px;}
+.plr25{padding-left: 25px;padding-right: 25px;}
+.pb5{padding-bottom: 5px}
+.pb10{padding-bottom: 10px}
+.pb13{padding-bottom: 13px}
+.pb15{padding-bottom: 15px}
+.pb20{padding-bottom: 20px}
+.pb55{padding-bottom: 55px}
+.pt5{padding-top:5px;}
+.pt10{padding-top: 10px;}
+.pt12{padding-top: 12px}
+.pt15{padding-top: 15px;}
+.pt20{padding-top: 20px;}
+.pt25{padding-top: 25px;}
+.pt42{padding-top: 42px;}
+.pt5p{padding-top: 5%;}
+.pr0{padding-right: 0;}
+.pr5{padding-right: 5px;}
+.pl0{padding-left:0;}
+.pl2{padding-left: 2px;}
+.pl5{padding-left:5px;}
+.pl10{padding-left:10px;}
+.pl15{padding-left: 15px;}
+.pl60{padding-left: 60px;}
+.-pl20{padding-left:-20px;}
+.pl12p{padding-left: 12%;}
+/* 外边距 */
+.margin15{margin:15px;}
+.margin30{margin:30px;}
+.m30{margin: 30px;}
+.mt0{margin-top: 0;}
+.mt1{margin-top: 1px;}
+.mt5 {margin-top: 5px;}
+.mt9{margin-top: 9px;}
+.mt10{margin-top: 10px;}
+.mt15{margin-top: 15px;}
+.mt20 {margin-top: 20px;}
+.mt30{margin-top: 30px;}
+.mt-1{margin-top:-1px;}
+.mb0{margin-bottom: 0;}
+.mb5{margin-bottom: 5px;}
+.mb10{margin-bottom: 10px;}
+.mb15{margin-bottom: 15px;}
+.mb46{margin-bottom:46px;}
+.mb60{margin-bottom: 60px;}
+.mr6{margin-right:6px;}
+.mr20{margin-right:20px;}
+.ml20{margin-left:20px;}
+.mtb5{margin-top:5px;margin-bottom:5px;}
+.mtb10{margin-top: 10px;margin-bottom: 10px;}
+.mtb15{margin-top: 15px;margin-bottom: 15px;}
+.mtb20{margin-top: 20px;margin-bottom: 20px;}
+.mt20b50{margin-top: 20px;margin-bottom: 50px;}
+.mlr3{margin-right: 3px;margin-left: 3px;}
+.mlr10{margin-right:10px;margin-left:10px;}
+.mlr15{margin-left: 15px;margin-right: 15px;}
+/*签到*/
+.calendar{background:#faca34;padding:15px 15px 0;}
+.libaolist .bg-red{background:#f26c85;}
+.libaolist .pt2{padding-top:2px;}
+.libaolist .pt3{padding-top:3px;}
+.libaolist .btn-lingqu{width:70px;text-align:center;background:#f26c85;color:#fff;}
+.libaolist .btn-disable{width:70px;text-align:center;background:#c9c9c9;color:#fff;}
+.btn-qiandao{width:120px;height:50px;background:#58bc8d;border:5px solid #faca34;color:#fff;font-size:18px;font-weight:bolder;border-radius:25px;text-align:center;position:relative;bottom:-20px;}
+.btn-lottery{width:120px;text-align:center;color:#fff;background:#58bc8d;font-size:16px;}
+.calenbox{width:100%;margin:0 auto;background:#faca34;}
+.calenbox .date{width:14%;text-align:center;background:#fff;border-radius:7px;color:#6a3906;font-weight:bolder;font-size:18px;padding:10px 0;float:left;border-right:1px solid #faca34;border-bottom:1px solid #faca34;}
+
+.sign table{width:100%;border-collapse: collapse;border-spacing: 0;color: #a46626;font-weight: bold;font-size:20px;}
+.sign th,.sign td {width: 30px;height: 40px;text-align: center;line-height: 40px;border:1px solid #faca34;border-radius:6px;background:#fff;}
+.sign th {font-size: 16px;border-radius:6px;background:#fff;}
+.sign td {color: #404040;vertical-align: middle;border-radius:6px;background:#fff;color: #a46626;}
+.sign .on {background-color:#dc7a14;}
+.calendar_month_next,.calendar_month_prev{width: 34px;height: 40px;cursor: pointer;}
+.calendar_month_next {float:right;line-height:40px;}
+.calendar_month_span {display:inline;line-height: 40px;font-size: 16px;color: #656565;letter-spacing: 2px;font-weight: bold;}
+.calendar_month_prev {float:left;line-height:40px;}
+.sign_succ_calendar_title {text-align: center;border-left:1px solid #faca34;border-right:1px solid #faca34;background:#faca34;}
+.sign_main{border-top:1px solid #faca34;font-family: "Microsoft YaHei",SimHei;}

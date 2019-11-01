@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+  </head>
+  <body>
+      <section id="list" class="aui-content aui-margin-b-15">
+          <ul class="aui-list aui-media-list">
+              <li v-for="(v,k) in it" class="aui-list-item" @click="openWin('web', {title:v.title, url:v.linkurl, data:v.content})">
+                  <div class="aui-media-list-item-inner">
+                      <div class="aui-list-item-inner aui-list-item-arrow">
+                          <div class="aui-list-item-text">
+                              <div class="aui-list-item-title" v-text="(k+1)+'、'+v.title"></div>
+                          </div>
+                          <!-- <div class="aui-list-item-text aui-ellipsis-2" v-text="v.content"></div> -->
+                      </div>
+                  </div>
+              </li>
+          </ul>
+      </section>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+      apiready = function(){
+          var list = new Vue({
+              el: '#list',
+              data: {it:[]},
+              mounted: function(){
+                  $api.get('app/apptext/id,title,content,linkurl/100/0/createtime/desc?type=102', function(json){
+                      list.it = json;
+                  });
+              },
+          });
+      };
+  </script>
+  </html>

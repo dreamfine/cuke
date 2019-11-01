@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+<title>结算佣金明细</title>
+<link rel="stylesheet" type="text/css" href="../css/api.css" />
+</head>
+<body>
+    <section class="aui-content aui-border-b">
+        <ul class="aui-list aui-media-list" id="commission" v-cloak>
+            <li v-for="v in it" class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-row aui-row-padded">
+                        <p class="aui-col-xs-3 aui-text-center aui-font-size-12" v-text="v.username"></p>
+                        <p class="aui-col-xs-3 aui-text-center" v-text="'￥'+parseFloat(v.payfor_money)"></p>
+                        <p class="aui-col-xs-3 aui-text-center" v-text="'￥'+parseFloat(v.money)"></p>
+                        <p class="aui-col-xs-3 aui-text-center aui-font-size-12" v-html="tb_date(v.createtime, '<br>')"></p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </section>
+</body>
+<script type="text/javascript" src="../script/api.js" ></script>
+<script type="text/javascript" src="../script/vue.js" ></script>
+<script type="text/javascript" src="../script/common.js" ></script>
+<script type="text/javascript">
+apiready = function () {
+    var commission = new Vue({
+        el: '#commission',
+        data: {it: []},
+        mounted: function(){
+            $api.get('my/commission_log?startTime='+api.pageParam.startTime+'&levels='+api.pageParam.levels, function(json){
+                commission.it = json;
+            });
+        },
+    });
+}
+</script>
+</html>

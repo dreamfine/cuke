@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+      <title>列表</title>
+      <link rel="stylesheet" type="text/css" href="css/api.css"/>
+      <style media="screen">
+        #header {
+          background: url(image/image/my_balance/bg1.png);
+          background-repeat: repeat;
+          background-size: 100% 100%;
+        }
+      </style>
+  </head>
+  <body>
+    <header id="header" class="aui-bar aui-bar-nav">
+        <a class="aui-pull-left aui-btn" onclick="api.closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">正在充值</div>
+    </header>
+  </body>
+  <script type="text/javascript" src="script/api.js"></script>
+  <script type="text/javascript" src="script/common.js"></script>
+  <script type="text/javascript">
+  apiready = function(){
+      api.parseTapmode();
+      var header = $api.byId('header');
+      $api.fixStatusBar(header);
+      var header_h = $api.offset(header).h;
+      api.openFrame({
+    		  name: 'buy',
+        	url: $api.getStorage('pay_url'),
+        	rect: {x:0, y:header_h, w:'auto', h:api.frameHeight-header_h}
+    	});
+      api.addEventListener({
+          name: 'resume'
+      }, function(ret, err){
+          api.closeWin({name: 'payapi'});
+      });
+  };
+  </script>
+  </html>

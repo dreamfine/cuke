@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>签到</title>
+<link rel="stylesheet" href="../css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="../css/swiper.css"/>
+<link rel="stylesheet" href="../css/checkin.css">
+</head>
+<body>
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12 clearPadding">
+			<section id="swiper" class="swiper-container">
+          <div class="swiper-wrapper">
+              <div v-for="v in it" @click="openWin('web', {title:v.title,url:v.linkurl})" class="swiper-slide" tapmode>
+                  <img :data-src="v.picurl" class="swiper-lazy" />
+              </div>
+          </div>
+          <div id="pagination" class="swiper-pagination"></div>
+      </section>
+			<div class="calendar">
+				<div class="calenbox">
+					<div id="calendar"></div>
+				</div>
+				<div class="text-center" onclick="checkin()" tapmode>
+					<button class="btn btn-qiandao">立即签到</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript" src="../script/calendar.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/swiper.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/toast.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script>
+apiready = function(){
+		api.parseTapmode();
+		//轮播图
+		var swiper = new Vue({
+				el: '#swiper',
+				data: {it: []},
+				mounted: function(){
+						$api.get('app/adv/id,picurl,linkurl/5?type=5', function(json){
+								swiper.it = json;
+						});
+				},
+				updated: function(){
+						new Swiper('#swiper', {
+								loop: true,
+								autoplay: true,
+								pagination: {el: '#pagination'},
+								lazy: {loadPrevNext: true},
+						});
+				},
+		});
+		$api.get('my/checkin', function(json){
+				calUtil.init(json, 'load');
+		});
+}
+function checkin(){
+		$api.post('my/checkin', function(money){
+				api.toast({ msg: '签到成功,奖励 '+ money +' 金币' });
+				api.sendEvent({name: 'reload'});
+				setTimeout(function(){
+						location.reload();
+				}, 2000);
+		}, function(json){
+				api.toast({ msg: json.msg });
+		});
+}
+</script>
+</body>
+</html>

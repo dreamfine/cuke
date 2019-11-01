@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+      <style>
+      .image-list {
+          width: 100%;
+          height: 85px;
+          background-size: cover;
+          padding: 10px 10px;
+          overflow: hidden;
+      }
+      .image-item {
+          width: 65px;
+          height: 65px;
+          background-image: url(../image/add.png);
+          background-size: 100% 100%;
+          display: inline-block;
+          position: relative;
+          border-radius: 5px;
+          margin-right: 10px;
+          margin-bottom: 10px;
+          border: solid 1px #e8e8e8;
+      }
+      .image-item .image-close {
+          position: absolute;
+          display: inline-block;
+          right: -6px;
+          top: -6px;
+          width: 20px;
+          height: 20px;
+          text-align: center;
+          line-height: 20px;
+          border-radius: 12px;
+          background-color: #f26c85;
+          color: #fff;
+          border: solid 1px #f26c85;
+          font-size: 0.6rem;
+          font-weight: 200;
+          z-index: 1;
+      }
+      </style>
+  </head>
+  <body>
+      <section class="aui-content" id="feedback">
+          <ul class="aui-list aui-form-list">
+              <li class="aui-list-header">问题和意见</li>
+              <li class="aui-list-item">
+                  <div class="aui-list-item-inner">
+                      <div class="aui-list-item-input">
+                          <textarea placeholder="请详细描述你的问题和意见..." v-model="content"></textarea>
+                      </div>
+                  </div>
+              </li>
+              <li class="aui-list-header">图片(选填,提供问题截图)</li>
+              <li class="aui-list-item">
+                  <div class="image-list">
+                      <div v-for="(v,k) in images" class="image-item" :style="add(k)">
+                          <div class="image-close" @click="del(k)" tapmode>X</div>
+                      </div>
+                      <div class="image-item" v-if="images.length < 4" @click="select()" tapmode></div>
+                  </div>
+              </li>
+          </ul>
+          <ul class="aui-list aui-form-list aui-margin-t-10">
+              <li class="aui-list-item aui-padded-5">
+                  <div class="aui-list-item-inner">
+                      <div class="aui-list-item-label aui-text-primary">联系QQ</div>
+                      <div class="aui-list-item-input">
+                          <input type="text" v-model="qq" placeholder="选题，便于我们联系你">
+                      </div>
+                  </div>
+              </li>
+          </ul>
+      </section>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/toast.js"></script>
+  <script type="text/javascript">
+  var feedback;
+  apiready = function(){
+      api.parseTapmode();
+      feedback = new Vue({
+          el: '#feedback',
+          data: {content:'', images:[], qq:''},
+          methods: {
+              //选择图片
+              select: function(){
+                  api.getPicture({
+                      sourceType: 'library',
+                      encodingType: 'jpg',
+                  }, function(ret, err) {
+                      if (ret && ret.data && feedback.images.length < 4) {
+                          feedback.images = feedback.images.concat(ret.data);
+                      }
+                  });
+              },
+              //添加图片
+              add: function(k){
+                  return 'background-image:url('+ feedback.images[k] +')';
+              },
+              //删除图片
+              del: function(k){
+                  feedback.images.splice(k, 1);
+              },
+          }
+      });
+  };
+  function save(){
+      var toast = new auiToast();
+      if(feedback.content === ''){
+          api.alert({
+              msg: '请填写问题描述',
+          });
+          return false;
+      }
+      var json = {};
+      for (var i in feedback.images) {
+          json['image'+i] = feedback.images[i];
+      }
+      api.ajax({
+          url: app_url +'my/feedback',
+          method: 'post',
+          headers: {
+              token: $api.getStorage('token')
+          },
+          certificate: {
+              path: 'widget://charge/image/client.p12',
+              password: 'dXF5r6fkwIwojeV3'
+          },
+          data: {
+              values: {content:feedback.content, qq:feedback.qq},
+              files: json,
+          }
+      },function(ret, err){
+          if (ret) {
+              if(ret.code === 0){
+                  toast.success({title: '提交成功'});
+                  feedback.content = '';
+                  feedback.images = [];
+              }else{
+                  api.alert({
+                      msg: ret.msg,
+                  });
+              }
+          }
+      });
+  }
+  </script>
+  </html>

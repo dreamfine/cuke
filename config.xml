@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><widget id="A6019771726519" security="false" version="0.0.1">
+ <name>芒果社区</name>
+   <description/>
+   <author email="developer@apicloud.com" href="http://www.apicloud.com">
+   Developer
+   </author>
+   <content src="index.html"/>
+   <access origin="*"/>
+   <preference name="appBackground" value="#262626"/>
+   <preference name="windowBackground" value="#262626"/>
+   <preference name="frameBackgroundColor" value="#f5f5f5"/>
+   <preference name="hScrollBarEnabled" value="false"/>
+   <preference name="vScrollBarEnabled" value="false"/>
+   <preference name="autoLaunch" value="true"/>
+   <preference name="fullScreen" value="false"/>
+   <preference name="autoUpdate" value="true"/>
+   <preference name="smartUpdate" value="true"/>
+   <preference name="debug" value="false"/>
+   <preference name="urlScheme" value="mituapp"/>
+   <preference name="statusBarAppearance" value="true"/>
+   <preference name="checkSslTrusted" value="false"/>
+   <preference name="appCertificateVerify" value="false"/>
+   <preference name="customRefreshHeader" value="UIPullRefreshFlash"/>
+   <permission name="readPhoneState"/>
+   <permission name="fileSystem"/>
+   <permission name="internet"/>
+   <feature name="UIPullRefreshFlash"/>
+   <feature name="UISearchBar"/>
+   <feature name="mam"/>
+   <feature name="trans"/>
+   <feature name="FNScanner"/>
+   <feature name="shareAction"/>
+   <feature name="dialogBox"/>
+   <feature name="clipBoard"/>
+   <feature name="FNImageClip"/>
+   <feature name="videoPlayer"/>
+   <feature name="webBrowser"/>
+   </widget>

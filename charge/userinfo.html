@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+      <title>用户信息window</title>
+      <link rel="stylesheet" type="text/css" href="css/api.css"/>
+  </head>
+  <body>
+    <header id="header" class="aui-bar aui-bar-nav">
+        <a class="aui-pull-left aui-btn" onclick="api.closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">设置</div>
+        <a class="aui-pull-right aui-btn aui-btn-outlined" tapmode onclick="save()">保存</a>
+    </header>
+    <footer id="footer" class="aui-bar aui-bar-tab">
+        <div class="aui-bar-tab-item aui-text-danger">退出</div>
+    </footer>
+  </body>
+  <script type="text/javascript" src="script/api.js"></script>
+  <script type="text/javascript" src="script/common.js"></script>
+  <script type="text/javascript">
+  apiready = function(){
+      var header = $api.byId('header');
+      $api.fixStatusBar(header);
+      var footer = $api.byId('footer');
+      //加载frame
+      var header_h = $api.offset(header).h;
+      var footer_h = $api.offset(footer).h;
+      api.openFrame({
+    		  name: 'userinfo',
+        	url: 'widget://charge/html/userinfo.html',
+        	rect:{x:0, y:header_h, w:'auto', h:api.frameHeight-header_h-footer_h},
+    	});
+      $api.addEvt(footer, 'click', function(){
+          $api.get('my/quit', function(){
+              $api.rmStorage('token');
+              //刷新个人中心
+              api.sendEvent({ name: 'logout' });
+              api.closeWin();
+          });
+      });
+  };
+  function save(){
+      api.execScript({
+          name: 'userinfo',
+          frameName: 'userinfo',
+          script: 'save();'
+      });
+  }
+  </script>
+  </html>

@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+<title>提现</title>
+<link rel="stylesheet" type="text/css" href="../css/api.css" />
+<style>
+.aui-radio{width:1rem;height:1rem;}
+.aui-btn.aui-btn-outlined{border-radius:50px}
+.aui-list .aui-list-item-right{ position: absolute; right: 0; top: 0.25rem; }
+</style>
+</head>
+<body>
+    <section class="aui-content">
+        <div class="aui-card-list">
+            <div class="aui-card-list-content-padded aui-text-danger">公告：提现后将在24小时内打款</div>
+        </div>
+    </section>
+    <section class="aui-content" id="withdraw">
+        <ul class="aui-list aui-form-list">
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">收款姓名</div>
+                    <div class="aui-list-item-input">
+                        <input type="text" name="realname" :value="realname" placeholder="请输入收款支付宝真实姓名" readonly>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">收款支付宝</div>
+                    <div class="aui-list-item-input">
+                        <input type="text" name="alipay" :value="alipay" placeholder="请输入收款支付宝账号" readonly>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <ul class="aui-list aui-form-list aui-margin-t-10">
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">账户余额</div>
+                    <div class="aui-list-item-input">
+                        <input type="text" name="amount" :value="amount" placeholder="" readonly>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">提现金额</div>
+                    <div class="aui-list-item-input">
+                        <input type="text" name="price" v-model="price" :placeholder="'最低提现金额'+minprice+'元起'">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">手机号</div>
+                    <div class="aui-list-item-input">
+                        <input name="phone" id="phone" type="tel" :value="phone" placeholder="输入您的手机号" readonly>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label aui-text-primary">验证码</div>
+                    <div class="aui-list-item-input">
+                        <input name="code" v-model="code" type="tel" placeholder="输入验证码">
+                    </div>
+                    <div class="aui-list-item-right" id="getcode">
+                        <div class="aui-btn aui-btn-outlined aui-btn-sm">获取验证码</div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="aui-content-padded">
+            <div class="aui-btn aui-btn-info aui-btn-block aui-font-size-20" @click="save()">提现</div>
+        </div>
+    </section>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/toast.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/input.js"></script>
+<script type="text/javascript">
+apiready = function(){
+    var toast = new auiToast();
+    var withdraw = new Vue({
+        el: '#withdraw',
+        data: {
+            realname: '',
+            alipay: '',
+            amount: 0,
+            minprice: 0,
+            price: '',
+            phone: '',
+            code: '',
+        },
+        mounted: function(){
+            $api.get('my/withdraw_info', function(json){
+                withdraw.realname = json.realname;
+                withdraw.alipay = json.alipay;
+                withdraw.amount = json.amount;
+                withdraw.minprice = json.minprice;
+                withdraw.phone = json.phone;
+                sendsms($api.byId('phone'));
+            });
+        },
+        methods: {
+            save: function(){
+                if(this.realname === ''){
+                    toast.fail({title: '请填写姓名'});
+                    return false;
+                }
+                if(this.alipay === ''){
+                    toast.fail({title: '请填写支付宝'});
+                    return false;
+                }
+                if(this.code === ''){
+                    toast.fail({title: '请填写验证码'});
+                    return false;
+                }
+                if(this.code != code_data){
+                      api.alert({
+                          title: '错误提示',
+                          msg: '您输入的验证码不正确',
+                      });
+                      return;
+                }
+                $api.post('my/withdraw', {
+                    price: this.price,
+                    code: this.code
+                }, function(){
+                    toast.success({title: '申请提现成功'});
+                    api.sendEvent({name: 'reload'});
+                    setTimeout(function(){
+                        api.closeWin();
+                    }, 2000);
+                }, function(data){
+                    toast.fail({title: data.msg});
+                });
+            }
+        }
+    });
+}
+</script>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+      <title>分享赚钱</title>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="../css/swiper.css"/>
+      <style>
+      #swiper{margin-top:1.5rem}
+      #swiper .swiper-slide{width:60%;position:relative;}
+      #swiper .swiper-slide .qr{position:absolute;width:40%;left:30%;bottom:5%;}
+      </style>
+  </head>
+  <body>
+      <section id="swiper" class="swiper-container" v-cloak>
+          <div class="swiper-wrapper">
+              <div v-for="v in it" class="swiper-slide" @click="openWin('web', {title:v.title,url:v.linkurl})" tapmpde>
+                  <img :data-src="v.picurl" class="swiper-lazy" />
+                  <img :src="qr" class="qr" />
+              </div>
+          </div>
+      </section>
+      <section class="aui-content-padded aui-margin-b-10">
+          <div class="aui-card-list aui-border-t1">
+              <div class="aui-card-list-header">
+                  规则说明
+              </div>
+              <div class="aui-card-list-content-padded" id="shareinfo"></div>
+          </div>
+      </section>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/swiper.js"></script>
+  <script type="text/javascript" src="../script/canvas.js"></script>
+  <script type="text/javascript" src="../script/toast.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+  apiready = function(){
+
+      toast = new auiToast();
+      swiper = new Vue({
+          el: '#swiper',
+          data: {
+              it: [],
+              qr: '../image/qr.png',
+          },
+          created: function(){
+              toast.loading({title:'加载中'});
+          },
+          mounted: function(){
+              //获取海报
+              $api.get('app/adv/id,picurl,linkurl/5?type=6', function(json){
+                  swiper.it = json;
+              });
+              $api.get('app/shareinfo', function(info){
+                  if(info){
+                      $api.html($api.byId('shareinfo'), info.replace(/\n/g, '<br>'));
+                  }
+              });
+          },
+          updated: function(){
+              toast.hide();
+              //轮播图组件
+              new Swiper('#swiper', {
+                  loop: true,
+                  slidesPerView: 'auto',
+                  centeredSlides: true,
+                  lazy: {loadPrevNext: true},
+                  effect: 'coverflow',
+                  coverflowEffect: {slideShadows: false},
+                  on: {
+                      slideChange: function(){
+                          swiper.index = this.realIndex;
+                      }
+                  },
+              });
+          },
+      });
+
+      var scanner1 = api.require('FNScanner');
+      scanner1.encodeImg({
+          content: $api.getStorage('invite'),
+          saveImg: {
+              path: 'fs://qr.jpg',
+              w: 300,
+              h: 300
+          },
+      }, function(ret){
+          if(ret && ret.status){
+              swiper.qr = ret.imgPath;
+          }
+      });
+  };
+  //复制邀请口令
+  function kouling(){
+      var clipBoard = api.require('clipBoard');
+      clipBoard.set({
+          value: $api.getStorage('kouling')
+      }, function(ret){
+          if(ret && ret.status) {
+              toast.success({title: '^_^ 复制成功'});
+          }
+      });
+  };
+  //生成邀请海报
+  function compile(type){
+      toast.loading({title:'正在生成邀请图片'});
+      api.imageCache({
+          url: swiper.it[swiper.index].picurl,
+          thumbnail: false,
+      }, function(ret){
+          if(ret && ret.status === true){
+              qrPoster({
+                  picUrl: ret.url,
+                  qrText: $api.getStorage('invite'),
+              }, function(base64){
+                  toast.hide();
+                  saveQR(base64, type);
+              });
+          }
+      });
+  };
+  </script>
+  </html>

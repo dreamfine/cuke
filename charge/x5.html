@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="css/api.css"/>
+    <title>安卓x5播放器</title>
+</head>
+<body>
+    <header id="header" class="aui-bar aui-bar-nav">
+        <a class="aui-pull-left aui-btn" onclick="api.closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title"></div>
+    </header>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript">
+apiready = function(){
+    var video_h = 300;
+    var header = $api.byId('header');
+    $api.fixStatusBar(header);
+    var header_h = $api.offset(header).h;
+    var browser = api.require('webBrowser');
+    browser.closeView();
+    $api.get('my/video/'+api.pageParam.id, function(json){
+        $api.text($api.dom(header, 'div.aui-title'), json.title);
+        api.openFrame({
+            name: 'x5',
+            url: 'widget://charge/html/x5.html',
+            pageParam: json,
+            reload: true,
+            rect: {x:0, y:header_h + video_h, w:'auto', h:api.frameHeight - header_h - video_h}
+        });
+        var browser = api.require('webBrowser');
+        browser.openView({
+            url: app_url.substring(0,app_url.length-3)+'uploads/x5.html?title=s&videourl='+ json.videourl,
+            rect: { x: 0, y: header_h, w: 'auto', h: video_h }
+        });
+    });
+};
+</script>
+</html>

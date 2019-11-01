@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+      <style>
+      .aui-col-xs-4{padding:0.5rem}
+      </style>
+  </head>
+  <body>
+      <section class="aui-content" id="buy">
+          <section class="aui-content aui-padded-10 aui-margin-b-10 aui-text-center aui-text-white aui-bg-info">
+              <div style="font-size:1.5rem" v-text="money"></div>
+              <div class="aui-margin-b-5 aui-font-size-16">金币余额</div>
+          </section>
+          <section class="aui-content-padded aui-margin-b-15">
+              <div class="aui-row">
+                  <div v-for="(v,k) in it" class="aui-col-xs-4" @click="getMoney(k)" tapmode>
+                      <div class="aui-btn aui-btn-block" :class="ok===k ? 'aui-btn-info' : 'aui-btn-outlined'" v-text="'￥'+v"></div>
+                  </div>
+              </div>
+          </section>
+          <section class="aui-content aui-margin-b-15">
+              <ul class="aui-list aui-form-list">
+                  <li class="aui-list-item">
+                      <div class="aui-list-item-inner">
+                          <div class="aui-list-item-label">充值金额：</div>
+                          <div class="aui-list-item-input">
+                              <input type="number" v-model="thismoney" placeholder="元">
+                          </div>
+                      </div>
+                  </li>
+              </ul>
+          </section>
+          <div class="aui-content-padded aui-padded-t-10">
+              当前充值金币：<span class="aui-text-danger aui-font-size-20" v-text="parseInt(thismoney*10)"></span>
+          </div>
+          <div class="aui-content-padded" v-show="payapi.wechat==1" @click="payfor('wechat')" tapmode>
+              <div class="aui-btn aui-btn-info aui-btn-block aui-font-size-20">微信充值</div>
+          </div>
+          <div class="aui-content-padded" v-show="payapi.alipay==1" @click="payfor('alipay')" tapmode>
+              <div class="aui-btn aui-text-white aui-bg-success aui-btn-block aui-font-size-20">支付宝充值</div>
+          </div>
+          <div class="aui-content-padded" v-show="payapi.kefu==1" @click="mqq()" tapmode>
+              <div class="aui-btn aui-text-white aui-bg-purple aui-btn-block aui-font-size-20">客服充值</div>
+          </div>
+          <section class="aui-content-padded aui-margin-b-10">
+              <div class="aui-card-list aui-border-t1">
+                  <div class="aui-card-list-header">
+                      充值说明
+                  </div>
+                  <div class="aui-card-list-content-padded" id="moneytips"></div>
+              </div>
+          </section>
+      </section>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/toast.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+  apiready = function(){
+      api.parseTapmode();
+      var buy = new Vue({
+          el: '#buy',
+          data: {
+            it: [],
+            ok: 0,
+            money: 0, //金币余额
+            thismoney: '', //充值金额
+            payapi: {},
+          },
+          watch: {
+              thismoney(num){
+                  if(num < 1){
+                      this.thismoney = '';
+                      return true;
+                  }
+                  if(num > 0 && num.indexOf('.') > -1 && num.split('.')[1].length > 2){
+                      this.thismoney = parseFloat(num).toFixed(2);
+                  }
+              }
+          },
+          mounted: function(){
+              $api.get('my/money', function(money){
+                  buy.money = money;
+              });
+              $api.get('my/moneytips', function(moneytips){
+                  $api.html($api.byId('moneytips'), moneytips.replace(/\n/g, '<br>'));
+              });
+              $api.get('app/payapi', function(data){
+                  buy.payapi = data;
+              });
+              $api.get('app/buymoney', function(data){
+                  buy.it = data.split(',');
+                  buy.thismoney = buy.it[0];
+              });
+          },
+          methods: {
+              getMoney: function(k){
+                  buy.ok = k;
+                  buy.thismoney = buy.it[k];
+              },
+              payfor: function(type){
+                  if(buy.thismoney > 0){
+                      payapp(type, {active: 'recharge', num: buy.thismoney, describe: '充值金币'});
+                  } else {
+                    alert('请输入充值金额')
+                  }
+              },
+              mqq: function(){
+                if(buy.thismoney > 0){
+                    location.href = encodeURI('mqq://im/chat?chat_type=wpa&uin='+ this.payapi.qq +'&version=1&src_type=web');
+                } else {
+                  alert('请输入充值金额')
+                }
+              }
+          }
+      });
+      api.addEventListener({
+          name: 'reload'
+      }, function(ret, err){
+          if(ret){
+              buy.ok = 0;
+              buy.money = parseInt(buy.money) + ret.value.money*10;
+              buy.thismoney = buy.it[0];
+          }
+      });
+  };
+  //发起支付请求
+  function payapp(type, pageParam){
+      var dialogBox = api.require('dialogBox');
+      pageParam.tradeType = type;
+      var file = '';
+      if(type == "alipay"){
+        file = 'fs://ali.jpg'
+      }else if(type == "wechat"){
+        file = 'fs://wx.jpg'
+      }
+      dialogBox.raffle({
+      texts: {
+          title: '待支付',
+          mainText: '截屏后识别二维码'+pageParam.num+'元',
+          subText: '支付后点击确认',
+          leftTitle: '取消支付',
+          rightTitle: '我已支付'
+      },
+      styles: {
+          bg: '#fff',
+          corner: 10,
+          w: 300,
+          title: {
+              size: 20,
+              color: '#000',
+              marginT: 20,
+          },
+          icon: {
+              marginT: 10,
+              w: 200,
+              h: 200,
+              iconPath: file
+          },
+          main: {
+              marginT: 2,
+              color: '#636363',
+              size: 14
+          },
+          sub: {
+              marginT: 5,
+              marginB: 5,
+              color: '#999999',
+              size: 14
+          },
+          left: {
+              marginT: 5,
+              marginB: 5,
+              marginL: 0,
+              w: 130,
+              h: 35,
+              corner: 2,
+              bg: '#fff',
+              color: '#007FFF',
+              size: 16
+          },
+          right: {
+              marginT: 5,
+              marginB: 5,
+              marginL:40,
+              w: 130,
+              h: 35,
+              corner: 2,
+              bg: '#fff',
+              color: '#007FFF',
+              size: 16
+          }
+      }
+    }, function(ret, err) {
+        if (ret) {
+          if(ret.eventType == 'left'){
+            dialogBox.close({
+                dialogName: 'raffle'
+            });
+          }else{
+            $api.post('my/paym', pageParam, function(data){
+              dialogBox.close({
+                  dialogName: 'raffle'
+              });
+              alert('提交成功,请耐心等待客服确认')
+            }, function(data){
+                toast.fail({title:data.msg});
+            });
+          }
+        } else {
+            alert(JSON.stringify(err));
+        }
+    });
+
+  }
+  </script>
+  </html>

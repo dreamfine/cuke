@@ -1,0 +1,291 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" href="../css/zb_live.css">
+    <link rel="stylesheet" type="text/css" href="../css/zb_api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/zb_iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/zb_aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/zb_auislide.css" />
+    <link rel="stylesheet" type="text/css" href="../css/zb_style.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/zb_common.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/zb_aui-flex.css"/>
+    <title>title</title>
+    <style type="text/css">
+			.contentFooter{
+				position: absolute;
+				bottom: 0.6rem;
+				left:0.6rem;
+				right: 0.6rem;
+			}
+			 .jbBox,.gzmBox,.gbBox{
+				display: inline-block;
+				background: rgba(0,0,0,.5);
+				text-align: center;
+			}
+			.contentFooter  img{
+				width: 1.2rem;
+				vertical-align: middle;
+
+			}
+			.jbBox,.gbBox{
+				display: inline-block;
+				width: 1.8rem;
+				height: 1.8rem;
+				vertical-align: middle;
+			}
+			.jbBox img{
+				padding-top: 0.2rem;
+			}
+			.gbBox img{
+				padding-top: 0.25rem;
+			}
+			.gzmBox{
+				width: 3.2rem;
+				padding: 3px 0px;
+			}
+			.barrageBox{
+				position: absolute;
+				bottom: 3rem;
+				left: 0px;
+				width:80%;
+				max-height: 60%;
+				overflow-y: auto;
+				overflow-x: hidden;
+				-webkit-overflow-scrolling: touch;
+			}
+			.barrageBoxTitle{
+				color: #fd5e02;
+				width: 4.5rem;
+				padding: 0px 5px;
+			}
+			.livingMsg{
+				position: absolute;
+				top: 0.6rem;
+				left: 0.5rem;
+			}
+			.livingMsgL,.reportBox{
+				background: rgba(0,0,0,.5);
+			}
+			.livingMsgL_L img{
+				display: block;
+				width: 1.8rem;
+				height: 1.8rem;
+				margin-right: 0.2rem;
+			}
+			.livingMsgL_R{
+				padding-right: 0.6rem;
+			}
+			.reportBox{
+				padding: 1rem 1.6rem;
+				width: 70%;
+
+			}
+		</style>
+
+    <script type="text/javascript" src="../script/zb_zhibo.js" ></script>
+
+</head>
+<body>
+
+<!--聊天窗口部分代码  开始-->
+<div id="livebt" class="live-bt" >
+</div>
+<div id="vue-content">
+    <div id="mengban" style="text-align:right;" :class="giftName">
+        <img src="../image/" alt="" style="width: 50%;margin-top: 70px;"/>
+    </div>
+
+    <div class="barrageBox" id="barrageBox">
+      <ul>
+          <!-- <li class="announcement" v-html="announcement"></li> -->
+      </ul>
+      <div id="message" style="margin:10px">
+          <ul id="inputUl">
+            <li v-for="text in inputList" class="message-list"> <span class="metext" v-text="metext"> </span v-text="text"></li>
+          </ul>
+      </div>
+    </div>
+    <div id="livebtn"   style="background-color: rgba(0, 0, 0, 1)">
+        <input id="inputV" v-model="inputValue" type="text" style="color:#fff;width:55%"/>
+        <div onclick="closeWin()" class="live-btn-l">
+            <img src="../image/gift.png">
+        </div>
+        <div onclick="clickCloseBarrage(this)" class="live-btn-l">
+            <img src="../image/tanmu.png">
+        </div>
+        <div class="live-btn-l"  @click="handelClick">
+            <img src="../image/fasong.png">
+        </div>
+    </div>
+</div>
+<!--聊天窗口部分代码  结束-->
+
+  <div id="livebt" class="live-bt">
+    <div id="livetop" class="live-top"  >
+
+
+  <div class="br"></div>
+  <div class="br"></div>
+    <div class="br"></div>
+
+
+<!--主播图片-->
+
+<!-- <table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="42%">
+      <div  class="zbname " >
+         <img id="pic" style="width:2.5rem;height:2.5rem;border-radius:50%;">
+      </div>
+    </td>
+    <td width="58%">
+      <div id="title" class="zbname " style="color:#fffc00" ></div>
+    </td>
+  </tr>
+</table> -->
+<div style="display:flex; justify-content: flex-start;align-items:center;">
+  <div>
+     <img id="pic" style="width:2rem;border-radius:50%;">
+  </div>
+  <div id="title" style="color:#fffc00;margin-left:10px;" ></div>
+</div>
+</body>
+
+
+<!--文字广告1-->
+<script type="text/x-dot-template" id="wzttpl">
+
+ <span style="color:#ffffff;font-size: 0.7rem" onclick="toBanner('{{=it.linkurl}}')">{{=it.name}}</span>
+</script>
+
+<!--文字广告2-->
+<script type="text/x-dot-template" id="wzbtpl">
+ <span style="color:#ffffff;font-size: 0.7rem" onclick="toBanner('{{=it.linkurl}}')">{{=it.name}}</span>
+</script>
+
+<!--文字广告3-->
+<script type="text/x-dot-template" id="wzctpl">
+ <span style="color:#ffffff;font-size: 0.7rem" onclick="toBanner('{{=it.linkurl}}')">{{=it.name}}</span>
+</script>
+
+<!--文字广告4-->
+<script type="text/x-dot-template" id="wzdtpl">
+ <span style="color:#ffffff;font-size: 0.7rem" onclick="toBanner('{{=it.linkurl}}')">{{=it.name}}</span>
+</script>
+
+
+
+<script type="text/javascript" src="../script/zb_api.js" ></script>
+<script type="text/javascript" src="../script/zb_doT.js"></script>
+<script type="text/javascript" src="../script/zb_auipullrefresh.js"></script>
+<script type="text/javascript" src="../script/zb_auislide.js"></script>
+<script type="text/javascript" src="../script/zb_auilazyload.js" ></script>
+<script type="text/javascript" src="../script/jquery.js"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $('.back').click(function () {
+    window.history.go(-1);
+  });
+  });
+  function clickReportBox () {
+    $('#reportBox').removeClass('cm-hide');
+    setTimeout(function () {
+      $('#reportBox').addClass('cm-hide');
+    },2000);
+  }
+  function clickCloseBarrage (obj) {
+    if($(obj).hasClass('on')){
+      $(obj).removeClass('on');
+      $('#barrageBox').removeClass('cm-hide');
+      $(obj).html();
+    }else{
+      $(obj).addClass('on');
+      $('#barrageBox').addClass('cm-hide');
+      $(obj).html();
+    }
+  }
+</script>
+<script type="text/javascript">
+    apiready = function(){
+      api.parseTapmode();
+      var pic = $api.byId('pic');
+      var title = $api.byId('title');
+      pic.src = api.pageParam.img;
+      title.innerHTML = api.pageParam.title;
+
+      api.setStatusBarStyle({
+          style: 'light',
+          color: 'rgba(0,0,0,0)'
+      });
+    api.parseTapmode();
+    }
+
+
+    function toBanner(url){
+
+      if (url == '') {
+
+      }else {
+        api.openWin({
+            name: 'h5',
+            url: './h5.html',
+            pageParam: {
+                url: url
+            }
+        });
+      }
+    }
+
+    function closeWin(){
+      api.setScreenOrientation({
+          orientation: 'portrait_up'
+      });
+        api.closeWin({
+        });
+        api.execScript({
+             winName: 'bzhibo_play',
+             script: 'destroy();'
+         });
+    }
+
+    function imgUrl(url){
+      api.openWin({
+          name: 'h5',
+          url: './h5.html',
+          pageParam: {
+              url: url
+          }
+      });
+    }
+
+    function playRadio(){
+      api.hideProgress();
+    }
+
+    function openurl(url) {
+       api.openApp({
+       androidPkg : 'android.intent.action.VIEW',
+       mimeType : 'text/html',
+       uri : url,
+       }, function(ret, err) {
+        var msg = JSON.stringify(ret);
+        api.openApp({
+        iosUrl: url
+      });
+      });
+   }
+
+
+</script>
+
+<script src="http://s.sex008.online/chat.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/zb_xh.js" type="text/javascript" charset="utf-8"></script>
+<script src="../script/zb_flutter-hearts-zmt.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+
+</script>
+</html>

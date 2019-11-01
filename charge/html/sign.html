@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+      <style>
+        body{background-color:transparent;padding-top: 5rem}
+        .aui-content-padded{margin:2rem}
+        .aui-card-list-user{margin-bottom:0.5rem;padding:0;position: relative;}
+        .aui-card-list-user i{position: absolute;top:0.2rem;right: 0.5rem}
+        .aui-card-list-user img{border-top-left-radius: 0.5rem;border-top-right-radius: 0.5rem}
+        .aui-card-list,.aui-card-list-header{border-radius:0.5rem}
+      </style>
+  </head>
+  <body>
+      <section class="aui-content-padded" id="sign" v-cloak>
+          <div class="aui-card-list" v-if="parseInt(it.price) > parseInt(it.money)">
+              <div class="aui-card-list-header aui-card-list-user">
+                  <img :src="it.bgurl" alt="">
+                  <i class="aui-iconfont aui-icon-roundclosefill aui-font-size-20" onclick="closeFrame()" tapmode></i>
+              </div>
+              <div class="aui-card-list-content aui-text-center">
+                  <p class="aui-text-danger aui-margin-b-5">本视频需要 <span v-text="it.price">0</span> 金币</p>
+                  <p class="aui-text-danger aui-margin-b-5">余额 <span v-text="it.money">0</span> 金币，支付不足</p>
+                  <p class="aui-text-danger aui-margin-b-15">您可以通过如下方式获得金币</p>
+              </div>
+              <div class="aui-card-list-footer aui-text-center aui-border-t">
+                  <div class="aui-btn aui-btn-info aui-margin-r-10" onclick="openWin('buy', true)" tapmode>充值金币</div>
+                  <div class="aui-btn aui-btn-info aui-margin-r-10" onclick="openWin('vip', true)" tapmode>购买VIP</div>
+              </div>
+              <div class="aui-card-list-footer aui-text-center">
+                  <div class="aui-btn aui-btn-info aui-margin-r-10" onclick="openWin('checkin', true)" tapmode>每日签到</div>
+                  <div class="aui-btn aui-btn-info" onclick="openWin('share', true)" tapmode>邀请好友</div>
+              </div>
+          </div>
+          <div class="aui-card-list aui-margin-b-0" v-else>
+              <div class="aui-card-list-header aui-card-list-user">
+                  <img :src="it.bgurl" alt="">
+                  <i class="aui-iconfont aui-icon-roundclosefill aui-font-size-20" onclick="closeFrame()" tapmode></i>
+              </div>
+              <div class="aui-card-list-content aui-text-center">
+                  <p class="aui-text-danger aui-margin-b-5">本视频需要 <span v-text="it.price">0</span> 金币</p>
+                  <p class="aui-text-danger aui-margin-b-5">余额 <span v-text="it.money">0</span> 金币</p>
+				  <p class="aui-text-danger aui-margin-b-5">购买vip免费观看</p>
+              </div>
+              <div class="aui-card-list-footer aui-text-center aui-border-t">
+                  <div class="aui-btn aui-btn-info" @click="buy()" tapmode>购买本视频</div>
+              </div>
+          </div>
+      </section>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+  apiready = function(){
+      api.parseTapmode();
+      new Vue({
+          el: '#sign',
+          data: {it: api.pageParam},
+          methods: {
+              buy: function(){
+                  $api.get('my/buyvideo/'+api.pageParam.id, function(json){
+                      api.alert({msg: '购买成功' }, function(){
+                          openPlayer(api.pageParam.id, api.pageParam.tid);
+                          setTimeout(function(){
+                              api.sendEvent({name: 'reload'});
+                          }, 3000);
+                      });
+                  }, function(json){
+                      api.alert({msg: json.msg });
+                  })
+              }
+          }
+      });
+      api.addEventListener({
+          name: 'reload'
+      }, function(ret, err){
+          if(ret){
+              api.closeFrame();
+          }
+      });
+  };
+  function closeFrame(){
+      api.closeFrame();
+  }
+  </script>
+  </html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>芒果视频APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <style>
+    .aui-radio{width:1rem;height:1rem;}
+    .aui-btn.aui-btn-outlined{border-radius:50px}
+    .aui-list .aui-list-item-right{ position: absolute; right: 0; top: 0.25rem; }
+    </style>
+</head>
+<body class="aui-bg-white">
+  <section class="aui-content-padded" id="agent" v-cloak>
+      <ul class="aui-list aui-form-list aui-border-0">
+          <li class="aui-list-item aui-padded-10">
+              <div class="aui-list-item-inner">
+                  <div class="aui-list-item-label aui-text-primary">收款姓名</div>
+                  <div class="aui-list-item-input">
+                      <input v-model="it.realname" :readonly="it.role !== 0" type="text" placeholder="请输入收款支付宝真实姓名">
+                  </div>
+              </div>
+          </li>
+          <li class="aui-list-item aui-padded-10">
+              <div class="aui-list-item-inner">
+                  <div class="aui-list-item-label aui-text-primary">收款支付宝</div>
+                  <div class="aui-list-item-input">
+                      <input v-model="it.alipay" :readonly="it.role !== 0" type="text" placeholder="请输入收款支付宝账号">
+                  </div>
+              </div>
+          </li>
+          <li class="aui-list-item aui-padded-10">
+              <div class="aui-list-item-inner">
+                  <div class="aui-list-item-label aui-text-primary">微信</div>
+                  <div class="aui-list-item-input">
+                      <input v-model="it.wechat" :readonly="it.role !== 0" type="text" placeholder="微信">
+                  </div>
+              </div>
+          </li>
+          <li class="aui-list-item aui-padded-10">
+              <div class="aui-list-item-inner">
+                  <div class="aui-list-item-label aui-text-primary">QQ</div>
+                  <div class="aui-list-item-input">
+                      <input v-model="it.qq" :readonly="it.role !== 0" type="text" placeholder="QQ">
+                  </div>
+              </div>
+          </li>
+          <li class="aui-list-item aui-padded-10">
+              <div class="aui-list-item-inner">
+                  <div class="aui-list-item-label aui-text-primary">申请理由</div>
+                  <div class="aui-list-item-input">
+                      <textarea :placeholder="it.tips" v-model="it.remark" :readonly="it.role !== 0"></textarea>
+                  </div>
+              </div>
+          </li>
+      </ul>
+      <div class="aui-content-padded aui-padded-t-10">
+          支付押金：<span class="aui-text-danger aui-font-size-20" v-text="(it.price*10 || 0)+'金币'"></span>
+      </div>
+      <div class="aui-content-padded" v-show="it.role === 0">
+          <div class="aui-btn aui-btn-info aui-btn-block aui-font-size-20" @click="save()">
+              <template v-if="it.agenttips == ''">立即申请</template><template v-else>审核被拒，重新申请</template>
+          </div>
+      </div>
+      <div class="content-padded" v-show="it.agenttips != ''">
+          <p>拒绝理由：<span v-text="it.agenttips"></span>（请完善资料，重新提交）</p>
+      </div>
+  </section>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/toast.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+apiready = function () {
+    new Vue({
+        el: '#agent',
+        data: {
+            it: {},
+            payapi: {},
+        },
+        mounted: function(){
+            var _self = this;
+            $api.get('my/buyagent', function(data){
+                _self.it = data;
+                api.execScript({
+                    name: 'agent',
+                    script: 'auth.set('+ (data.role === 0 ? 1 : 2) +');'
+                });
+            });
+            $api.get('app/payapi', function(data){
+                _self.payapi = data;
+            });
+        },
+        methods: {
+            save: function(){
+              var _self = this;
+              var toast = new auiToast();
+              _self.it.tradeType = 'money_pay';
+              $api.post('my/buyagent', _self.it, function(data){
+                  toast.success({ title:'支付成功，等待审核' });
+                  setTimeout(function(){
+                      api.closeFrame({name: 'payapi'});
+                      api.sendEvent({name: 'reload'});
+                      _self.it.role = 9;
+                      api.execScript({
+                          name: 'agent',
+                          script: 'auth.set(2);'
+                      });
+                  }, 2000);
+              }, function(data){
+                  toast.fail({title:data.msg});
+              });
+              return true;
+              var dialogBox = api.require('dialogBox');
+              var items = [];
+              if(this.payapi.wechat==1){
+                  items.push({
+                      payapi: 'wechat_app',
+                      text: '微信支付',
+                      icon: 'widget://charge/image/wechat.png'
+                  });
+              }
+              if(this.payapi.alipay==1){
+                  items.push({
+                      payapi: 'alipay_wap',
+                      text: '支付宝',
+                      icon: 'widget://charge/image/alipay.png'
+                  });
+              }
+              if(this.payapi.money==1){
+                  items.push({
+                      payapi: 'money_pay',
+                      text: '金币支付',
+                      icon: 'widget://charge/image/money.png'
+                  });
+              }
+              dialogBox.actionMenu ({
+                rect:{
+                    h: 150
+                },
+                texts:{
+                     cancel: '取消'
+                },
+                items:items,
+                styles:{
+                    column: items.length,
+                    itemIcon:{
+                        size: 50
+                    },
+                    cancel:{
+                        size: 16
+                    }
+                },
+              }, function(ret){
+                  dialogBox.close({dialogName: 'actionMenu'});
+                  if(ret.eventType === 'click'){
+                      toast.loading({title:'正在创建支付信息...'});
+                      _self.it.tradeType = items[ret.index].payapi;
+                      $api.post('my/buyagent', _self.it, function(data){
+                          toast.hide();
+                          toast.loading({title:'正在支付...'});
+                          if(_self.it.tradeType === 'wechat_app'){
+                              api.openFrame({
+                                  name: 'payapi',
+                                  url: data.wxPayWay,
+                                  rect: { x: 0, y: 0, w: 0, h: 0 },
+                              });
+                          }else
+                          if(_self.it.tradeType === 'alipay_wap'){
+                              api.openFrame({
+                                  name: 'payapi',
+                                  url: data.alipay_wap,
+                                  rect: { x: 0, y: 0, w: 0, h: 0 },
+                              });
+                          }else
+                          if(_self.it.tradeType === 'money_pay'){
+                              toast.hide();
+                              toast.success({ title:'支付成功，等待审核' });
+                              setTimeout(function(){
+                                  api.closeFrame({name: 'payapi'});
+                                  api.sendEvent({name: 'reload'});
+                                  _self.it.role = 9;
+                                  api.execScript({
+                                      name: 'agent',
+                                      script: 'auth.set(2);'
+                                  });
+                              }, 2000);
+                          }
+                          if(_self.it.tradeType !== 'money_pay'){
+                              api.addEventListener({
+                                  name: 'resume'
+                              }, function(ret, err){
+                                  setTimeout(function() {
+                                      toast.hide();
+                                      $api.get('my/pay_check/'+ data.sn, function(){
+                                          toast.success({ title:'支付成功，等待审核' });
+                                          setTimeout(function(){
+                                              api.closeFrame({name: 'payapi'});
+                                              api.sendEvent({name: 'reload'});
+                                              _self.it.role = 9;
+                                              api.execScript({
+                                                  name: 'agent',
+                                                  script: 'auth.set(2);'
+                                              });
+                                          }, 2000);
+                                      }, function(){
+                                          toast.fail({title:'支付失败'});
+                                      });
+                                  }, 3000);
+                              });
+                          }
+                      }, function(data){
+                          toast.hide();
+                          toast.fail({title:data.msg});
+                      });
+                  }
+              });
+            },
+        }
+    });
+}
+</script>
+</html>

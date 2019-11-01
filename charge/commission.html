@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+      <title>结算佣金明细window</title>
+      <link rel="stylesheet" type="text/css" href="css/api.css"/>
+  </head>
+  <body>
+    <header id="header" class="aui-bar aui-bar-nav">
+        <a class="aui-pull-left aui-btn" onclick="api.closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">佣金明细</div>
+    </header>
+    <section id="commission" class="aui-content aui-padded-10 aui-text-center aui-text-white aui-bg-info">
+        <div class="aui-row aui-row-padded">
+            <div class="aui-col-xs-4 aui-text-center aui-border-r" onclick="picker()">
+                <div class="aui-grid-label"><span id="year"></span>年</div>
+                <big class="aui-label-cont" id="month"></big>
+                <small class="aui-font-size-12">月</small>
+                <span class="aui-iconfont aui-icon-unfold"></span>
+            </div>
+            <div class="aui-col-xs-4 aui-text-center">
+                <div class="aui-grid-label">累计收入</div>
+                <big class="aui-label-cont" id="total">0</big>
+            </div>
+            <div class="aui-col-xs-4 aui-text-center">
+                <div class="aui-grid-label">当日收入</div>
+                <big class="aui-label-cont" id="today">0</big>
+            </div>
+        </div>
+    </section>
+    <div class="aui-tab" id="level">
+        <div class="aui-tab-item aui-active" tapmode>一级</div>
+        <div class="aui-tab-item" tapmode>二级</div>
+        <div class="aui-tab-item" tapmode>三级</div>
+    </div>
+    <section class="aui-tab" id="tab">
+        <div class="aui-tab-item">用户名</div>
+        <div class="aui-tab-item">消费金额</div>
+        <div class="aui-tab-item">获得返佣</div>
+        <div class="aui-tab-item">时间</div>
+    </section>
+  </body>
+  <script type="text/javascript" src="script/api.js"></script>
+  <script type="text/javascript" src="script/tab.js"></script>
+  <script type="text/javascript" src="script/common.js"></script>
+  <script type="text/javascript">
+  var year,yearText,month,monthText,dayText,total,today,startTime,header_h,levels;
+  apiready = function(){
+      var header = $api.byId('header');
+      var commission = $api.byId('commission');
+      var level = $api.byId('level');
+      var tab = $api.byId('tab');
+      $api.fixStatusBar(header);
+      //加载frame
+      header_h = $api.offset(header).h + $api.offset(commission).h + $api.offset(level).h + $api.offset(tab).h;
+      var now = new Date();
+      year = $api.byId('year');
+      month = $api.byId('month');
+      total = $api.byId('total');
+      today = $api.byId('today');
+      yearText = now.getFullYear();
+      monthText = now.getMonth() + 1;
+      dayText = now.getDate();
+      startTime = yearText +'-'+ monthText +'-'+ dayText;
+      $api.text(year, yearText);
+      $api.text(month, monthText);
+      ajax();
+      new auiTab({
+          element: $api.byId('level'),
+      },function(ret){
+          levels = ret.index+1;
+          ajax();
+      });
+  };
+  function picker(){
+      api.openPicker({
+          type: 'date',
+          date: startTime,
+          title: '选择月份'
+      }, function(ret){
+          if (ret) {
+              yearText = ret.year;
+              monthText = ret.month;
+              dayText = ret.day;
+              startTime = yearText +'-'+ monthText +'-'+ dayText;
+              $api.text(year, yearText);
+              $api.text(month, monthText);
+              ajax();
+          }
+      });
+  }
+  function ajax(){
+      $api.get('my/commission_total?startTime='+startTime+'&levels='+levels, function(data){
+          $api.text(total, parseFloat(data.total)||0);
+          $api.text(today, parseFloat(data.today)||0);
+          api.openFrame({
+              name: 'commission',
+              url: 'widget://charge/html/commission.html',
+              reload: true,
+              pageParam: {startTime: startTime, levels: levels},
+              rect: {x:0, y:header_h, w:'auto', h:api.frameHeight-header_h},
+          });
+      });
+  }
+  </script>
+  </html>

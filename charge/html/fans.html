@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+  </head>
+  <body>
+      <section id="fanslist" class="aui-content aui-margin-b-15">
+          <ul class="aui-list aui-media-list">
+              <li v-for="v in it" class="aui-list-item" @click="onfans(v.uid)">
+                  <div class="aui-media-list-item-inner" :class="{'aui-list-item-arrow': level < 3}">
+                      <div class="aui-list-item-media" style="width: 3rem;">
+                          <img :src="v.avatar || '../image/logo.png'" class="aui-img-round aui-list-img-sm">
+                      </div>
+                      <div class="aui-list-item-inner">
+                          <div class="aui-list-item-text">
+                              <div class="aui-list-item-title">
+                                  <span v-text="v.username"></span>
+                                  <div class="aui-label aui-label-primary aui-margin-l-5" v-show="v.money" v-text="'金币 '+v.money"></div>
+                              </div>
+                              <div class="aui-list-item-right aui-font-size-14 aui-margin-r-15">
+                                  <span class="aui-text-danger" v-show="v.levels && level < 3" v-text="'推荐'+v.levels+'人'"></span>
+                              </div>
+                          </div>
+                          <div class="aui-list-item-text" v-text="tb_date(v.createtime)"></div>
+                      </div>
+                  </div>
+              </li>
+          </ul>
+          <div class="aui-card-list-footer aui-text-center" style="clear:both" v-text="loader"></div>
+      </section>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+  apiready = function(){
+      api.parseTapmode();
+      pullRefresh();
+      var fanslist = new Vue({
+          el: '#fanslist',
+          data: {
+              it: [],
+              offset: 0,
+              level: api.pageParam.level ? api.pageParam.level : 1,
+              loader: '正在加载更多...'
+          },
+          mounted: function(){
+              this.add(); //初始化
+              loadMore(function(){fanslist.add()}); //下拉加载
+          },
+          methods: {
+              add: function(){
+                  var limit = 20;
+                  var url = 'my/fans/';
+                  if(!api.pageParam.puid){
+                    api.pageParam.puid = -1;
+                  }
+                  url += limit +'/'+ this.offset +'?puid='+ api.pageParam.puid;
+                  console.log(url)
+                  $api.get(url, function(json){
+                      fanslist.offset += limit;
+                      fanslist.it = fanslist.it.concat(json);
+                      if(json.length < limit) fanslist.loader = '已到底部'
+                  });
+              },
+              onfans: function(uid){
+                  if(this.level > 2){
+                      return false;
+                  }
+
+                  api.openWin({
+                      name: 'fans'+uid,
+                      url: 'widget://charge/fans.html',
+                      pageParam: {puid:uid, level: this.level+1},
+                      slidBackType: 'edge',
+                  });
+              }
+          }
+      });
+  };
+  </script>
+  </html>

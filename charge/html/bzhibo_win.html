@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+</head>
+<body>
+  <header class="aui-bar aui-bar-nav" id="aui-header" style="background:#ffffff;font-size:16px">
+      <a class="aui-btn aui-pull-left"  tapmode onclick="closeWin() "style="color:#000000;font-size:18px">
+          <span class="aui-iconfont aui-icon-left" style="color:#000000;font-size:18px"> </span>返回
+      </a>
+
+
+      <div id="title" class="aui-title" style="color:#000000;font-size:18px">主播列表</div>
+  </header>
+</body>
+<script type="text/javascript" src="../script/zb_api.js"></script>
+<script type="text/javascript">
+  apiready = function(){
+    api.parseTapmode();
+    var title = $api.byId('title');
+    title.innerHTML = api.pageParam.title;
+    var header = $api.byId('aui-header');
+    $api.fixStatusBar(header);
+    var headerPos = $api.offset(header);
+    var body_h = $api.offset($api.dom('body')).h;
+    api.openFrame({
+        name: 'bzhibo_frm',
+        url: 'bzhibo_frm.html',
+        pageParam:{
+        	url: api.pageParam.url,
+          xinimg:api.pageParam.xinimg,
+          title:api.pageParam.title,
+          Number:api.pageParam.Number
+
+        },
+        bounces: false,
+        rect: {
+            x: 0,
+            y: headerPos.h,
+            w: 'auto',
+            h: 'auto'
+          }
+
+
+    });
+
+
+  }
+
+
+
+  function closeWin(){
+      api.closeWin({
+      });
+  }
+</script>
+</html>

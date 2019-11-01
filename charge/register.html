@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+      <title>注册window</title>
+      <link rel="stylesheet" type="text/css" href="css/api.css"/>
+      <style>
+      .aui-radio{width:1rem;height:1rem;}
+      .aui-btn.aui-btn-outlined{border-radius:50px}
+      .aui-list .aui-list-item-right{ position: absolute; right: 0; top: 0.25rem; }
+      </style>
+  </head>
+  <body class="aui-bg-white">
+    <header id="header" class="aui-bar aui-bar-nav aui-bar-light">
+        <a class="aui-pull-left aui-btn" onclick="api.closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">注册</div>
+    </header>
+    <section class="aui-content-padded">
+        <ul class="aui-list aui-form-list aui-border-0">
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label-icon">
+                        <i class="aui-iconfont aui-icon-mobile aui-font-size-20"></i>
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input name="phone" type="tel" placeholder="输入您的手机号">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item aui-padded-10" style="display:none;">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label-icon">
+                        <i class="aui-iconfont aui-icon-friendadd aui-font-size-20"></i>
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input name="invite" type="text" placeholder="输入邀请码（可不填写）">
+                    </div>
+                    <div class="aui-list-item-right" id="getinvite">
+                        <div class="aui-btn aui-btn-outlined aui-btn-sm">粘贴邀请码</div>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label-icon">
+                        <i class="aui-iconfont aui-icon-safe aui-font-size-20"></i>
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input name="code" type="tel" placeholder="输入验证码">
+                    </div>
+                    <div class="aui-list-item-right" id="getcode">
+                        <div class="aui-btn aui-btn-outlined aui-btn-sm">获取验证码</div>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item aui-padded-10">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label-icon">
+                        <i class="aui-iconfont aui-icon-lock aui-font-size-20"></i>
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input name="password" type="password" placeholder="输入8-32位密码">
+                    </div>
+                    <div class="aui-list-item-right" id="see">
+                        <i class="aui-iconfont aui-icon-attentionfill aui-font-size-20"></i>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </section>
+    <div class="aui-content-padded">
+        <div class="aui-btn aui-btn-info aui-btn-block aui-font-size-20" id="register">立即注册</div>
+    </div>
+    <div class="aui-content-padded aui-font-size-14 aui-padded-t-10">
+        <input class="aui-radio aui-margin-r-10" type="radio" checked>同意 <a href="#" class="aui-text-info">《芒果视频用户协议》</a>
+    </div>
+  </body>
+  <script type="text/javascript" src="script/api.js"></script>
+  <script type="text/javascript" src="script/toast.js"></script>
+  <script type="text/javascript" src="script/common.js"></script>
+  <script type="text/javascript" src="script/input.js"></script>
+  <script type="text/javascript">
+  var code_data = '';
+  apiready = function(){
+      var header = $api.byId('header');
+      $api.fixStatusBar(header);
+      var toast = new auiToast();
+      var input = $api.domAll('input');
+      //传递手机号
+      var phone = api.pageParam.phone;
+      phone && $api.val(input[0], phone);
+      //绑定验证码事件
+      sendsms(input[0]);
+      input_fous(input);
+      pwd_see(input[3]);
+      clip_invite(input[1]);
+
+
+
+      //注册
+      var register = $api.byId('register');
+      $api.addEvt(register, 'click', function(){
+          var phone = $api.val(input[0]);
+          var invite = $api.val(input[1]);
+          var code = $api.val(input[2]);
+          var password = $api.val(input[3]);
+console.log(code);
+console.log(code_data);
+          if(code != code_data){
+                api.alert({
+                    title: '错误提示',
+                    msg: '您输入的验证码不正确',
+                });
+                return;
+          }
+          if(is_phone(input[0]) && is_invite(input[1]) && is_code(input[2]) && is_pwd(input[3])){
+              $api.post('login2', {
+                  phone:phone,
+                  invite:invite,
+                  code:code,
+                  password:password, 
+              }, function(token){
+                  //登陆
+                  $api.setStorage('firstapp', true);
+                  $api.setStorage('token', token);
+                  api.sendEvent({name: 'islogin'});
+                  api.closeToWin({ name: 'main' });
+              }, function(json){
+                console.log(JSON.stringify(json))
+                  toast.fail({title:json.msg});
+              });
+          }
+      });
+  };
+
+  //生成验证码
+  function RndNum(n){
+    var rnd="";
+    for(var i=0;i<n;i++)
+        rnd+=Math.floor(Math.random()*10);
+    return rnd;
+  }
+  //验证码倒计时
+  function sendsms(input){
+
+    code_data = RndNum(6);
+    var content = escape('#code#='+code_data);
+      var getcode = $api.byId('getcode');
+      var tipcode = $api.eq(getcode, 1);
+      $api.one(getcode, 'click', function(){
+          if(is_phone(input) === true){
+            api.ajax({
+                url: 'http://v.juhe.cn/sms/send?mobile='+$api.val(input)+'&tpl_id=168537&tpl_value='+content+'&key=0cb50358ebe22ad3e24d02d1fea6cb62',
+                method: 'get'
+            },function(ret, err){
+                  //验证码倒计时
+                  var i = 59;
+                  var timer = window.setInterval(function(){
+                      if(i === 0){
+                          window.clearInterval(timer);
+                          $api.html(tipcode, '获取验证码');
+                          sendsms(input);
+                      }else{
+                          $api.html(tipcode, i--+'s重新发送');
+                      }
+                  }, 1000);
+              });
+          }else{
+              sendsms(input);
+          }
+      });
+  };
+  </script>
+  </html>

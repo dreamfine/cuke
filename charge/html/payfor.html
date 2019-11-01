@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>分享</title>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+      <style>
+      body{background-color:transparent;padding-top: 5rem}
+      .aui-grid img{ height:2rem; display:inline }
+      .aui-grid [class*=aui-col-]{padding:0.5rem 0}
+      .aui-grid .aui-grid-label{margin-top:0}
+      </style>
+  </head>
+  <body>
+      <footer class="aui-bar aui-bar-tab">
+          <h3 class="aui-margin-t-10">选择支付方式</h3>
+          <div class="aui-grid" onclick="pay('wechat_app')" tapmode>
+              <img src="../image/wechat.png">
+              <div class="aui-grid-label">微信支付</div>
+              <!--
+              <div class="aui-row">
+                  <div class="aui-col-xs-6" onclick="pay('wechat_app')" tapmode>
+                      <img src="../image/wechat.png">
+                      <div class="aui-grid-label">微信支付</div>
+                  </div>
+                  <div class="aui-col-xs-6" onclick="pay('alipay_wap')" tapmode>
+                      <img src="../image/alipay.png">
+                      <div class="aui-grid-label">支付宝支付</div>
+                  </div>
+              </div>
+              -->
+          </div>
+          <h3 class="aui-margin-b-15" onclick="api.closeFrame()" tapmode>关闭</h3>
+      </footer>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/toast.js"></script>
+  <script type="text/javascript">
+  apiready = function(){
+      api.parseTapmode();
+  }
+  function pay(type){
+      var toast = new auiToast();
+      toast.loading({title:'正在创建支付信息...'});
+      api.pageParam.tradeType = type;
+      $api.post('my/pay', api.pageParam, function(data){
+          toast.hide();
+          toast.loading({title:'正在支付...'});
+          if(type === 'wechat_app'){
+              api.openFrame({
+                  name: 'wechat_app',
+                  url: data.wxPayWay,
+                  rect: { x: 0, y: 0, w: 0, h: 0 },
+              });
+          }else
+          if(type === 'alipay_wap'){
+              api.openFrame({
+                  name: 'alipay_wap',
+                  url: data.aliPayWay,
+                  rect: { x: 0, y: 0, w: 0, h: 0 },
+              });
+          }
+          api.addEventListener({
+              name: 'resume'
+          }, function(ret, err){
+              setTimeout(function() {
+                  toast.hide();
+                  $api.get('my/pay_check/'+ data.sn, function(){
+                      toast.success({ title:'支付成功' });
+                      setTimeout(function(){
+                          api.closeFrame();
+                          api.sendEvent({
+                              name: 'reload',
+                              extra: {
+                                  money: api.pageParam.num
+                              }
+                          });
+                      }, 2000);
+                  }, function(){
+                      toast.fail({title:'支付失败'});
+                  });
+              }, 3000);
+          });
+      }, function(data){
+          toast.hide();
+          toast.fail({title:data.msg});
+      });
+  }
+  </script>
+  </html>

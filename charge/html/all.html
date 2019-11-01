@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+      <link rel="stylesheet" type="text/css" href="../css/swiper.css"/>
+      <style>
+        .aui-row-padded [class*=aui-col-xs-]{padding: 0.25rem}
+        .aui-ellipsis-1{height: 1.2rem}
+        .videoarea .actor-details {
+          width:97%;
+          height: 5rem;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .videoarea .actor-details .touxiang {
+          width: 2rem;
+          height: 2rem;
+          background-color: gold;
+          border-radius: 50%;
+          display: flex;
+          align-items: left;
+          justify-content: center;
+        }
+        .videoarea .actor-details .touxiang img {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 50%;
+        }
+        .videoarea .details {
+          color: white;
+          width: 85%;
+        }
+        .videoarea .details .introduce {
+          width: 100%;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          font-size: 14px;　
+        }
+        .videoarea .swiper{
+          width: 95%;
+          height: 9rem;
+        }
+        .videoarea .swiper-wrapper {
+          width: 100%;
+          margin: 0 auto;
+        }
+        .videoarea .swiper-slide {
+          width: 25%;
+          color: white;
+          position: relative;
+        }
+        .videoarea .swiper-slide img {
+          width: 100%;
+          height: 6rem;
+          border-radius: 5px;
+        }
+        .videoarea .swiper-slide p{
+          width: 100%;
+          height: 1.5rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: white;
+          line-height: 1.5rem;
+        }
+        .videoarea .swiper-slide span {
+          position: absolute;
+          right: 0.3rem;
+          bottom: 1.54rem;
+        }
+      </style>
+  </head>
+  <body style="background-color: #323232;">
+      <section id="swiper" class="swiper-container">
+          <div class="swiper-wrapper">
+              <div v-for="v in it" @click="openWin('web', {title:v.title,url:v.linkurl})" class="swiper-slide" tapmode>
+                  <img :data-src="v.picurl" class="swiper-lazy" />
+              </div>
+          </div>
+          <div id="pagination" class="swiper-pagination"></div>
+      </section>
+
+      <section class="aui-content aui-margin-5" id="channellist">
+        <div class="main">
+            <ul class="liebiao">
+              <li v-for="(item,index) in list" :key="index" @click="openWin('list2', {tid:item.id,title:item.title})">
+                <img :src="item.picurl" alt="">
+                <i>{{item.title}}</i>
+              </li>
+            </ul>
+        </div>
+      </section>
+      </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/swiper.js"></script>
+  <script type="text/javascript" src="../script/echo.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+      apiready = function(){
+          api.parseTapmode();
+          //pullRefresh();
+          //频道
+          var channellist = new Vue({
+              el: '#channellist',
+              data: {list: []}, 
+              mounted: function(){
+                  $api.get('app/videotype/id,title,picurl/50/0/id/desc?type='+api.pageParam.type,function(json){
+                      channellist.list = json;
+                      //console.log(JSON.stringify(json))
+                  });
+              }
+          });
+      };
+  </script>
+  </html>

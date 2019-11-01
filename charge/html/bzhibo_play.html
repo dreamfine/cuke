@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+</head>
+<body>
+
+</body>
+<script type="text/javascript" src="../script/zb_api.js" ></script>
+<script type="text/javascript">
+    var ischeck = localStorage.getItem('check');
+    apiready = function(){
+
+      playzb();
+
+      api.showProgress({
+          title: '加载中...',
+          text: '请稍等',
+          modal: false
+      });
+
+    }
+
+	function playzb(){
+      var obj = api.require('aliyunLive');
+      obj.init({
+         rect: {
+               x: 0,
+               y: 0,
+               w: api.winWidth,
+               h: api.winHeight
+          },
+          accessKeyId : 'LTAI36cx4lfjyzCS',
+          accessKeySecret : 'R9gueXV9kcym1tyxYzvYHLmLAAshfz',
+          businessId : 'video_live'
+      }, function(ret, err) {
+          if(ret){
+            api.openFrame({
+                name: 'bzhibohd',
+                url: './bzhibohd.html',
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: api.winWidth,
+                    h: api.winHeight
+                },
+                pageParam: {
+                    title: api.pageParam.title,
+                    img: api.pageParam.img
+                },
+                bgColor: 'rgba(0,0,0,0)'
+            });
+            obj.prepareToPlay({
+                url:api.pageParam.url
+            }, function(ret, err) {
+                if(ret && ret.status){
+                  obj.addEventListener(function(ret){
+                      if (ret.eventName == 'error') {
+                        alert('主播暂时不在线，请更换房间！');
+                        api.closeWin();
+                        api.hideProgress();
+                      }
+                      else {
+                        obj.play();
+                        api.hideProgress();
+
+
+                      }
+                  });
+                }else {
+                  alert('主播暂时不在线，请更换房间！');
+                  api.closeWin();
+                  api.hideProgress();
+                }
+            });
+          }else {
+            alert('主播暂时不在线，请更换房间！');
+            api.closeWin();
+            api.hideProgress();
+          }
+      });
+
+    }
+</script>
+</html>

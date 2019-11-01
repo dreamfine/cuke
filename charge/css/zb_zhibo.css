@@ -1,0 +1,44 @@
+@charset "utf-8";
+body{font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;font-size:14px;}
+/*index部分*/
+.weui-tabbar{position: fixed !important;}
+
+.weui-panel{margin: 0 !important;padding-bottom: 60px;}
+.weui-media-box__title span{float: right;font-size: 14px;color:#FFF;}
+/*mine部分
+.logo{width: 100%;height: 150px;overflow: hidden;background: #33bb59;position: relative;}
+.logoImg {width: 80px;height: 80px;position: absolute;top: 35px;left:15px;}
+.logoImg img{width: 100%;height: 100%;border-radius: 30px;}*/
+.logo{width: 100%;height: 150px;overflow: hidden;background-image:url(../image/zhibo_bg.png);position: relative;background-size:100% 100%;}
+.zhiboImg {width:50px;height:50px;text-align:center;}
+.zbText{font-size:16px;margin-left: 10px;text-align:center;margin-top: 50px;color: #fff;}
+.zbText h3 span{padding-left: 30px;font-size: 16px;color: #fff;}
+.text {text-align:center;padding-top:5px
+  box-sizing: border-box;
+
+  width:100%;
+  overflow:hidden;
+  font-size:15px;
+  line-height:40px;
+  font-family: '黑体';
+  min-height:40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space:nowrap;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/*宫格*/
+.weui-grids:after{width:1px;text-align:centerbottom:0;border-left:1px solid #ce86f4;-webkit-transform-origin:0 0;transform-origin:0 0;-webkit-transform:scaleX(.5);transform:scaleX(.5)}
+.weui-grid{position:relative;float:left;padding:20px 10px;width:33.33333333%;box-sizing:border-box}
+.weui-grid:before{top:0;width:1px;border-right:1px solid #ce86f4;-webkit-transform-origin:100% 0;transform-origin:100% 0;-webkit-transform:scaleX(.5);transform:scaleX(.5)}
+.weui-grid:after,
+.weui-grid:before{content:" ";position:absolute;right:0;bottom:0;color:#ce86f4}.weui-grid:after{left:0;height:1px;border-bottom:1px solid #ce86f4;-webkit-transform-origin:0 100%;transform-origin:0 100%;-webkit-transform:scaleY(.5);transform:scaleY(.5)}
+
+/*宫格1*/
+.weui-grids:after{width:1px;text-align:centerbottom:0;border-left:1px solid #d7d7d7;-webkit-transform-origin:0 0;transform-origin:0 0;-webkit-transform:scaleX(.5);transform:scaleX(.5)}
+.weui-grida{position:relative;float:left;padding:20px 10px;width:33.33333333%;box-sizing:border-box}
+.weui-grida:before{top:0;width:1px;border-right:1px solid #d7d7d7;-webkit-transform-origin:100% 0;transform-origin:100% 0;-webkit-transform:scaleX(.5);transform:scaleX(.5)}
+.weui-grida:after,
+.weui-grida:before{content:" ";position:absolute;right:0;bottom:0;color:#d7d7d7}.weui-grida:after{left:0;height:1px;border-bottom:1px solid #d7d7d7;-webkit-transform-origin:0 100%;transform-origin:0 100%;-webkit-transform:scaleY(.5);transform:scaleY(.5)}

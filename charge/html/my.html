@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/swiper.css"/>
+    <style type="text/css">
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    html,body {
+      font-size: 20px;
+      background-color: rgb(244, 244, 244);
+    }
+    header {
+      width: 100%;
+      height: 8rem;
+      background: url(../image/my/bg.png);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+    }
+    .person-msg {
+      width: 94%;
+      /*height: 10rem;*/
+      background-color: white;
+      border-radius: 5px;
+      position: absolute;
+      left: 3%;
+      top: 6.5rem;
+    }
+    .touxiang {
+      width: 4.6rem;
+      height: 4.6rem;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      top: -36%;
+      transform: translate(-50%, 30%);
+    }
+    .touxiang img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    .person {
+      width: 100%;
+      height: 30%;
+      text-align: center;
+      margin-top: 3rem;
+    }
+    .person p:nth-child(1){
+      height: 1.5rem;
+      line-height: 1.5rem;
+      color: rgb(234,156,90);
+      font-size: 20px;
+    }
+    .person p:nth-child(2){
+      height: 1.5rem;
+      line-height: 1.5rem;
+      color: rgb(160,160,160);
+      font-size: 14px;
+    }
+    .persons {
+      width: 100%;
+      height: 30%;
+      margin: 3rem auto 0;
+    }
+    .persons .name {
+      width: 100%;
+      display: flex;
+      color: rgb(234,156,90);
+      align-items: center;
+      justify-content: center;
+    }
+    .persons .name p:nth-child(1){
+      font-weight: bold;
+      font-size: 18px;
+      margin-right: 1rem;
+    }
+    .persons .name p:nth-child(2){
+      border: 1px solid rgb(234,156,90);
+      border-top-left-radius:11px;
+      border-bottom-right-radius:11px;
+      padding: 0 0.4rem;
+      font-size: 11px;
+    }
+    .persons .invite {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      color: rgb(234,156,90);
+      font-size: 16px;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    .persons .invite p:nth-child(2) {
+      font-size: 11px;
+      margin-left: 1rem;
+      border: 1px solid rgb(234,156,90);
+      padding: 0 0.3rem;
+      border-radius: 3px;
+    }
+    .person-msg .line {
+      width: 100%;
+      height: 1px;
+      background-color: rgb(244, 244, 244);
+      margin-top: 1rem;
+    }
+    .person-msg-bottom {
+      width:100%;
+      height: 3.5rem;
+      margin: 1rem auto 0;
+      display: flex;
+    }
+    .person-msg-bottom-left {
+      width: 49%;
+      text-align: center;
+    }
+    .person-msg-bottom-left p:nth-child(1) {
+      font-size: 23px;;
+      color: rgb(234,156,90);
+    }
+    .person-msg-bottom-left p:nth-child(2) {
+      font-size: 15px;
+      color: #999999;
+    }
+    .middle-line {
+      width: 1px;
+      background-color:rgb(244, 244, 244);
+    }
+    .tabbar {
+      width: 94%;
+      height: 5rem;
+      margin: 10rem auto 0.5rem;
+      background-color: #fff;
+      display: flex;
+      border-radius: 5px;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .tabbar > div {
+      width: 2.6rem;
+      text-align: center;
+    }
+    .tabbar > div>img {
+      width: 100%;
+    }
+    .tabbar > div>p {
+      font-size: 13px;
+      color: #999999
+    }
+    .swiper {
+      width: 94%;
+      height: 4rem;
+      margin: 0 auto 0.5rem;
+    }
+    .swiper img {
+      width: 100%;
+      height: 100%
+    }
+    .big-bottom {
+      width: 94%;
+      margin: 0 auto;
+      background-color: white;
+    }
+    .big-bottom-box {
+      width: 100%;
+      height: 3.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 15px;
+      color: #999999;
+      border-bottom: 1px solid rgb(244, 244, 244);
+    }
+    .big-bottom-box .left {
+      display: flex;
+      align-items: center;
+    }
+    .big-bottom-box .left img{
+      width: 2.6rem;
+      height: 2.6rem;
+      margin: 0 0.5rem;
+    }
+    .big-bottom-box .right {
+      width: 8px;
+      height: 14px;
+      margin-right: 0.5rem;
+    }
+    .big-bottom-box .right img {
+      width: 100%;
+      height: 100%;
+    }
+    </style>
+</head>
+<body>
+    <div id="my">
+      <header id="header"></header>
+      <section class="person-msg">
+        <div @click="it.username ? openWin('userinfo') : openWin('login')">
+          <div class="touxiang">
+            <img :src="it.avatar || '../image/logo.png'">
+          </div>
+          <!-- 未登录 -->
+          <div class="person" v-if="!it.username">
+            <p>看官大人请登录</p>
+            <p>签到、推广可增加更多金币哦</p>
+          </div>
+          <!-- 已登录 -->
+          <div class="persons" v-if="it.username">
+            <div class="name">
+              <p v-text="it.username || ''"></p>
+              <p v-if="it.viptime" v-text="it.viptime"></p>
+            </div>
+            <div class="invite">
+              <p>邀请码：<span  v-text="it.invite"></span></p>
+              <p @click.stop="invite()">复制推广链接</p>
+            </div>
+          </div>
+        </div>
+        <div class="line"></div>
+        <div class="person-msg-bottom">
+          <div class="person-msg-bottom-left" @click="openWin('buy', true)">
+            <p v-text="it.money||0"></p>
+            <p>金币充值</p>
+          </div>
+          <div class="middle-line"></div>
+          <div class="person-msg-bottom-left"  @click="openWin('checkin', true)">
+            <p v-text="it.checkin||0">次</p>
+            <p>签到有奖</p>
+          </div>
+        </div>
+      </section>
+      <section class="tabbar">
+        <div onclick="openWin('vip', true)" >
+          <img src="../image/my/vip.png">
+          <p>购买VIP</p>
+        </div>
+        <div onclick="openWin('favor', true)">
+          <img src="../image/my/shoucang.png">
+          <p>我的收藏</p>
+        </div>
+        <div onclick="openWin('order', true)">
+          <img src="../image/my/jilu.png">
+          <p>购买记录</p>
+        </div>
+        <div  onclick="openWin('profit', true)">
+          <img src="../image/my/tuiguang.png">
+          <p>推广中心</p>
+        </div>
+      </section>
+      <section class="big-bottom">
+        <div class="big-bottom-box" onclick="openWin('share', true)">
+          <div class="left">
+            <img src="../image/my/haoyou.png">
+            <p>邀请好友</p>
+          </div>
+          <div class="right"><img src="../image/my/right.png"></div>
+        </div>
+        <div class="big-bottom-box" onclick="openWin('message', true)">
+          <div class="left">
+            <img src="../image/my/xiaoxi.png">
+            <p>消息中心</p>
+          </div>
+          <div class="right"><img src="../image/my/right.png"></div>
+        </div>
+        <div class="big-bottom-box" onclick="qun()">
+          <div class="left">
+            <img src="../image/my/qq.png">
+            <p>联系客服</p>
+          </div>
+          <div class="right"><img src="../image/my/right.png"></div>
+        </div>
+        <div class="big-bottom-box"  onclick="openWin('help')">
+          <div class="left">
+            <img src="../image/my/wenti.png">
+            <p>常见问题</p>
+          </div>
+          <div class="right"><img src="../image/my/right.png"></div>
+        </div>
+        <div class="big-bottom-box" onclick="openWin('feedback')">
+          <div class="left">
+            <img src="../image/my/yijian.png">
+            <p>意见反馈</p>
+          </div>
+          <div class="right"><img src="../image/my/right.png"></div>
+        </div>
+      </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js" ></script>
+<script type="text/javascript" src="../script/vue.js" ></script>
+<script type="text/javascript" src="../script/toast.js" ></script>
+<script type="text/javascript" src="../script/swiper.js"></script>
+<script type="text/javascript" src="../script/common.js" ></script>
+<script type="text/javascript" src="../script/iconfont_my.js" ></script>
+<script type="text/javascript" src="../script/iconfont_profit.js" ></script>
+<script type="text/javascript">
+apiready = function () {
+    api.parseTapmode();
+    //pullRefresh();
+    var swiper = new Vue({
+        el: '#swiper',
+        data: {it: []},
+        mounted: function(){
+            $api.get('app/adv/id,picurl,linkurl/5?type=2', function(json){
+                swiper.it = json;
+            });
+        },
+        updated: function(){
+            new Swiper('#swiper', {
+                loop: true,
+                autoplay: true,
+                pagination: {el: '#pagination'},
+                lazy: {loadPrevNext: true},
+            });
+        },
+    });
+    //用户信息
+    var my = new Vue({
+        el: '#my',
+        data: {it: []},
+        mounted: function(){
+            this.add(); //初始化
+            //登入登出检测
+            LoginOut(function(){
+                my.add();
+            }, function(){
+                location.reload();
+            });
+        },
+        methods: {
+            add: function(){
+                $api.get('my', function(json){
+                  //console.log(JSON.stringify(json));
+                    my.it = json;
+                    console.log(json.invite_url)
+                    //邀请文案
+                    $api.setStorage('kouling', json.invite_text);
+                    //邀请网址
+                    $api.setStorage('invite', json.invite_url);
+                });
+            },
+            //复制邀请文案
+            invite: function(){
+                var clipBoard = api.require('clipBoard');
+                clipBoard.set({
+                    value: my.it.invite_text
+                }, function(ret, err) {
+                    if (ret && ret.status) {
+                        new auiToast().success({title:'复制成功'});
+                    }
+                });
+            }
+        }
+    });
+    api.addEventListener({
+        name: 'reload'
+    }, function(ret, err){
+        if(ret){
+            location.reload();
+        }
+    });
+}
+function qun(){
+    $api.get('app/payapi', function(data){
+        location.href = encodeURI('mqq://im/chat?chat_type=wpa&uin=' + data.qq + '&version=1&src_type=web');
+    });
+}
+</script>
+</html>

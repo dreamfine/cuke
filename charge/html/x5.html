@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>安卓x5相关推荐</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/swiper.css"/>
+    <style>
+    .aui-grid img{ height:1.4rem; display:inline }
+    .aui-grid [class*=aui-col-]{padding:0.5rem 0}
+    .aui-grid .aui-grid-label{margin-top:0}
+    .zan-flex{display: flex;align-items: baseline; margin-top: 0.2rem;justify-content: center;}
+    .pinglun-msg .top{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .pinglun-msg{
+      width: 96%;
+      margin: 0 auto;
+      border-bottom: 1px solid #ECECEC;
+    }
+    .pinglun-msg .top .left{
+      display: flex;
+      align-items: center;
+    }
+    .pinglun-msg .top .left img{
+      width: 2rem;
+      margin-right: 0.5rem;
+    }
+    .none-pinglun{
+      text-align: center;
+      line-height: 3rem;
+      font-size: 0.65rem;
+    }
+    #pinglun{
+      background-color: #fff;
+    }
+    #pinglun .time{
+      font-size: 0.6rem;
+    }
+    </style>
+</head>
+<body>
+    <section id="videoinfo" class="aui-content" v-cloak>
+        <div class="aui-card-list aui-margin-b-0">
+            <div class="aui-card-list-header aui-card-list-user">
+                <div class="aui-card-list-user-name" v-text="it.title"></div>
+                <div class="aui-card-list-user-info">
+                    <div class="aui-row">
+                        <div class="aui-col-xs-8 aui-font-size-14">
+                            <marquee scrollamount="1" class="aui-text-danger" v-text="it.videotips"></marquee>
+                        </div>
+                        <div v-if="it.favor" class="aui-col-xs-2 aui-text-right aui-text-info" @click="addfavor(it.id)" tapmode>
+                            <i class="aui-iconfont aui-font-size-18 aui-icon-favorfill"></i>已收藏
+                        </div>
+                        <div v-else class="aui-col-xs-2 aui-text-right" @click="addfavor(it.id)" tapmode>
+                            <i class="aui-iconfont aui-font-size-18 aui-icon-favorfill"></i>收藏
+                        </div>
+                        <div v-if="!it.love" class="aui-col-xs-2 aui-text-right zan-flex" @click="addlove(it.id)" tapmode>
+                            <img src="../image/zan.png" style="height:15px;margin-right:0.2rem;"><span v-text="it.loves" v-if="it.loves != 0"></span>
+                        </div>
+                        <div v-if="it.love" class="aui-col-xs-2 aui-text-right zan-flex" @click="addlove(it.id)" tapmode>
+                            <img src="../image/zan1.png" style="height:15px;margin-right:0.2rem;"><span v-text="it.loves" v-if="it.loves != 0" style="color:red;"></span>
+                        </div>
+                        <!-- <div  class="aui-col-xs-2 aui-text-right aui-text-info" @click="enqueue(it.videourl,it.title,it.picurl,'')" tapmode>
+                            <i class="aui-iconfont aui-font-size-18 aui-icon-down"></i>缓存
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="swiper" class="swiper-container" v-cloak>
+        <div class="swiper-wrapper">
+            <div v-for="v in it" @click="openWin('web', {title:v.title,url:v.linkurl})" class="swiper-slide" tapmode>
+                <img :data-src="v.picurl" class="swiper-lazy" />
+            </div>
+        </div>
+        <div id="pagination" class="swiper-pagination"></div>
+    </section>
+    <!-- 评论模块 -->
+    <div id="pinglun">
+        <div class="aui-card-list-header">
+            <div>
+              <span class="aui-text-danger">全部评论</span>
+            </div>
+        </div>
+        <div class="pinglun-msg" v-for="item in it">
+          <div class="top">
+            <div class="left">
+              <img :src="item.avatar || '../image/logo.png'" class="aui-img-round aui-list-img-sm">
+              <div class="name" v-text="item.username"></div>
+            </div>
+            <div class="right">
+              <div class="time" v-text="formatDateTime(item.createtime * 1000)"></div>
+            </div>
+          </div>
+          <p class="text-bottom" v-text="item.content"></p>
+        </div>
+        <div class="none-pinglun"  v-text="loader" @click="more()"></div>
+    </div>
+    <div class="aui-tab aui-margin-t-10">
+        <div class="aui-tab-item aui-active">
+            <i class="aui-iconfont aui-icon-hotfill aui-font-size-18"></i> 推荐视频
+        </div>
+    </div>
+    <section class="aui-content aui-margin-5" id="videolist" v-cloak>
+        <div class="aui-row-padded"  id="channeldetails">
+            <ul>
+              <li v-for="v in it" @click="openPlayer(v.id,v.tid, v.price)">
+                <img :src="v.picurl" alt="">
+                <i>{{v.title}}</i>
+              </li>
+            </ul>
+        </div>
+        <div class="aui-card-list-footer aui-text-center" style="clear:both" v-text="loader"></div>
+    </section>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/swiper.js"></script>
+<script type="text/javascript" src="../script/echo.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+apiready = function(){
+  console.log(JSON.stringify(api.pageParam))
+    open_pinglunBox()
+    //点击收藏
+    var videoinfo = new Vue({
+        el: '#videoinfo',
+        data: {it: api.pageParam},
+        methods: {
+          addfavor: function(vid){
+              $api.post('my/favor/'+vid, function(data){
+                  videoinfo.it.favor = data;
+              }, function(json){
+                  if(json.code === -1)
+                  api.alert({ msg: '请先登陆' });
+              });
+          },
+          addlove: function(vid){
+              $api.post('my/love/'+vid, function(data){
+                  videoinfo.it.love = data;
+                  if (data) {
+                    videoinfo.it.loves = parseInt(videoinfo.it.loves) + 1
+                  }else{
+                    videoinfo.it.loves = parseInt(videoinfo.it.loves) - 1
+                  }
+              }, function(json){
+                  if(json.code === -1)
+                  api.alert({ msg: '请先登陆' });
+              });
+          }
+        }
+    });
+    //轮播图
+    var swiper = new Vue({
+        el: '#swiper',
+        data: {it: []},
+        mounted: function(){
+            $api.get('app/adv/id,picurl,linkurl/5?type=4', function(json){
+                swiper.it = json;
+            });
+        },
+        updated: function(){
+            new Swiper('#swiper', {
+                loop: true,
+                autoplay: true,
+                pagination: {el: '#pagination'},
+                lazy: {loadPrevNext: true},
+            });
+        },
+    });
+    //相关视频推荐
+    var videolist = new Vue({
+        el: '#videolist',
+        data: {
+            it: [],
+            offset: 0,
+            loader: '正在加载更多...'
+        },
+        mounted: function(){
+            this.add(); //初始化
+            loadMore(function(){videolist.add()}); //下拉加载
+        },
+        updated: function(){
+            echo.init({offset: 500, throttle: 0}); //图片懒加载
+        },
+        methods: {
+            add: function(){
+                var limit = 10;
+                var url = 'app/videolist/id,tid,price,title,picurl/';
+                url += limit +'/'+ this.offset +'?tid='+ api.pageParam.tid;
+                $api.get(url, function(json){
+                    videolist.offset += limit;
+                    videolist.it = videolist.it.concat(json);
+                    if(json.length < limit) videolist.loader = '已到底部'
+                });
+            },
+        }
+    });
+    //评论
+    var pinglun = new Vue({
+        el: '#pinglun',
+        data: {
+            it: [],
+            offset: 0,
+            loader: '加载更多...'
+        },
+        mounted: function(){
+            this.add(); //初始化
+            //loadMore(function(){pinglun.add()}); //下拉加载
+        },
+        updated: function(){
+            echo.init({offset: 500, throttle: 0}); //图片懒加载
+        },
+        methods: {
+            add: function(){
+                var limit = 10;
+                var url = 'app/chats/avatar,content,username,video_chat.createtime/';
+                url += limit +'/'+ this.offset +'?vid='+ api.pageParam.id + '&vstatus=1';
+                $api.get(url, function(json){
+                  console.log(JSON.stringify(json))
+                    pinglun.offset += limit;
+                    pinglun.it = pinglun.it.concat(json.reverse());
+                    if(json.length < limit) pinglun.loader = '已到底部'
+                });
+            },
+            more: function(){
+              if (pinglun.loader == '加载更多...') {
+                pinglun.add()
+              }
+            },
+            // 时间戳转化函数
+            formatDateTime: function(inputTime){
+              var date = new Date(inputTime);
+              var date1 = new Date();
+      				var y = date.getFullYear();
+      				var m = date.getMonth() + 1;
+      				m = m < 10 ? ('0' + m) : m;
+      				var d = date.getDate();
+              var d1 = date1.getDate();
+      				d = d < 10 ? ('0' + d) : d;
+              d1 = d1 < 10 ? ('0' + d1) : d1;
+      				var h = date.getHours();
+      				h = h < 10 ? ('0' + h) : h;
+      				var minute = date.getMinutes();
+      				var second = date.getSeconds();
+      				minute = minute < 10 ? ('0' + minute) : minute;
+      				second = second < 10 ? ('0' + second) : second;
+              if (d1 == d) {
+                return h + ':' + minute;
+              } else if (d1 - d == 1) {
+                return '昨天'
+              }else{
+                return y + '/' + m + '/' + d;
+              }
+            },
+        }
+    });
+    //监听评论成功
+    api.addEventListener({
+        name: 'sendMsg'
+    }, function(ret, err){
+        pinglun.offset = 0;
+        var limit = 10;
+        var url = 'app/chats/avatar,content,username,video_chat.createtime/';
+        url += limit +'/'+ this.offset +'?vid='+ api.pageParam.id + '&vstatus=1';
+        $api.get(url, function(json){
+          console.log(JSON.stringify(json))
+            pinglun.offset += limit;
+            pinglun.it = json.reverse();
+            if(json.length < limit) pinglun.loader = '已到底部'
+            if(json.length >= limit) pinglun.loader = '加载更多...'
+        });
+
+    });
+};
+    function open_pinglunBox(){
+      api.openFrame({
+          name: 'pinglun_frm',
+          url: 'widget://charge/html/pinglun_frm.html',
+          rect: {
+              x: 0,
+              marginBottom: 0,
+              w: 'auto',
+              h: 50
+          },
+          pageParam: {
+              id: api.pageParam.id
+          },
+          bgColor: 'rgba(0,0,0,0)',
+      });
+
+    }
+</script>
+</html>

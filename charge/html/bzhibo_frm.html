@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../css/zb_aui.css" />
+    <link rel="stylesheet" href="../css/zb_base.css">
+    <link rel="stylesheet" type="text/css" href="../css/zb_style.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/zb_iconfont.css"/>
+    <style>
+       html,body{background-color: #f2f1f1;  }
+    }
+    </style>
+</head>
+<body>
+  <section class="myui-bg-live">
+  <div class="live-top">
+    <div class="live-top-l">
+      <img id="pic" src="">
+    </div>
+    <div class="live-top-r">
+      <div class="live-top-r-t">
+        <span id="title" class="live-ptname" style="color:#fff600">直播</span>
+        <span class="live-pt">直播平台</span>
+          <div  class="aui-label-list aui-label aui-label-danger">
+          当前在线人数:
+          <i id="num" ></i>
+          <span >人</span>
+
+        </div>
+      </div>
+      <div class="live-top-r-b">
+        直播视频与图片均来源于第三方平台，与本app无关，不要相信直播间任何广告，避免上当受骗。
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="br"> </div>
+  <div class="wrap">
+
+    <div class="game-page">
+
+    <div class="zhubo-list-wrap" id="liveList">
+
+      <ul class="clearfix" id="div_list">
+      </ul>
+
+    </div>
+
+</body>
+
+<script type="text/x-dot-template" id="template">
+{{~ it.zhubo : value : index }}
+    <li onclick="openWin1('{{= value.address }}','{{=value.title.replace(/%3F|%20|%/g, "")}}','{{= value. img }}')" >
+
+      <div class="video-mask-box">
+
+      <img src="{{= value. img }}" alt="" class="game-pic" style="height:350px">
+
+      </div>
+      <div  class="aui-badge">直播中</div>
+      <div class="til">{{=value.title.replace(/%3F|%20|%/g, "")}}</div>
+
+    </li>
+{{~}}
+</script>
+<script type="text/javascript" src="../script/api.js" ></script>
+<script type="text/javascript" src="../script/zb_doT.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+  apiready = function(){
+    var title = $api.byId('title');
+    var pic = $api.byId('pic');
+    zhubo();
+    pic.src = api.pageParam.xinimg;
+    title.innerHTML = api.pageParam.title;
+    getRandom();
+  }
+
+
+
+  function getRandom(){
+  var i = Math.random()*3000+1200;
+  document.getElementById("num").innerText = window.parseInt(i);
+  }
+
+  function zhubo(){
+    var div_list = $api.byId('div_list');
+    var template = $api.byId('template');
+    api.ajax({
+        url: api.pageParam.url,
+        data:{
+        }
+    },function(ret, err){
+        if (ret) {
+          var pagefn = doT.template(template.text);
+          div_list.innerHTML = pagefn(ret);
+          api.hideProgress();
+        } else {
+          api.hideProgress();
+        }
+    });
+
+  }
+
+  function openWin1(url,title,img){
+    if ($api.getStorage('token') === undefined) {
+        openWin('login');
+        return;
+    }
+    $api.get('my/buyvideozb', function(json){
+        console.log(json)
+          setTimeout(function(){
+              api.sendEvent({name: 'reload'});
+          },10);
+          openWin('html/bzhibo_play', {url:url, title:title, img:img})
+
+    }, function(json){
+      api.confirm({
+          title: '温馨提示',
+          msg: '您的金币不足，充值vip可免费观看！',
+          buttons: ['去充值', '不用了']
+      }, function(ret, err){
+          if( ret.buttonIndex == 1 ){
+              openWin('vip');
+          }
+      });
+    })
+  }
+
+</script>
+</html>

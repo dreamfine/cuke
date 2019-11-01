@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+      <title>列表</title>
+      <link rel="stylesheet" type="text/css" href="css/api.css"/>
+  </head>
+  <body>
+    <header id="header" class="aui-bar aui-bar-nav">
+        <a class="aui-pull-left aui-btn" onclick="api.closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title">购买VIP</div>
+    </header>
+    <footer id="footer" class="aui-bar aui-bar-tab aui-border-t">
+        <!-- <div class="aui-bar-tab-item aui-bg-info aui-text-white" tapmode onclick="buy()">
+            支付宝 <span id="total">0</span>
+        </div> -->
+        <div class="aui-bar-tab-item aui-bg-purple aui-text-white" tapmode onclick="paymoney()">
+            金币支付 <span id="total2">0</span>
+        </div>
+        <!-- <div class="aui-bar-tab-item aui-bg-info aui-text-white" tapmode onclick="mqq()">客服充值</div> -->
+    </footer>
+  </body>
+  <script type="text/javascript" src="script/api.js"></script>
+  <script type="text/javascript" src="script/common.js"></script>
+  <script type="text/javascript">
+  var active = '';
+  var total = '';
+  var total2 = '';
+  var num = 1;
+  apiready = function(){
+      api.parseTapmode();
+      var header = $api.byId('header');
+      $api.fixStatusBar(header);
+      var footer = $api.byId('footer');
+      //total = $api.byId('total');
+      total2 = $api.byId('total2');
+      //加载frame
+      var header_h = $api.offset(header).h;
+      var footer_h = $api.offset(footer).h;
+      api.openFrame({
+    		  name: 'vip',
+        	url: 'widget://charge/html/vip.html',
+        	rect: {x:0, y:header_h, w:'auto', h:api.frameHeight-header_h-footer_h}
+    	});
+  };
+  function setTotal(price, n, ac){
+      active = ac;
+      num = n;
+      price *= n;
+      //$api.text(total, '￥'+parseFloat(price.toFixed(2)));
+      $api.text(total2, parseInt(price*10));
+  }
+  function buy(){
+      payapp('alipay_wap', {active: active, num: num, describe: '购买VIP'});
+      // api.openFrame({
+      //     name: 'payfor',
+      //     url: 'widget://charge/html/payfor.html',
+      //     pageParam: {active: active, num: num, describe: '购买VIP'},
+      //     bounces: false,
+      //     bgColor: 'rgba(0,0,0,0.3)',
+      // });
+  }
+  function paymoney(){
+      $api.post('my/paymoney', {active: active, num: num}, function(data){
+          api.execScript({
+              name: 'vip',
+              frameName: 'vip',
+              script: 'toast(1, "支付成功");'
+          });
+          setTimeout(function(){
+              api.sendEvent({name: 'reload'});
+          }, 2000);
+      }, function(data){
+            api.execScript({
+                name: 'vip',
+                frameName: 'vip',
+                script: 'toast(0, "'+ data.msg +'");'
+            });
+      });
+  }
+  //发起支付请求
+  function payapp(type, pageParam){
+      api.execScript({
+          name: 'vip',
+          frameName: 'vip',
+          script: 'toast(2, "正在创建支付信息...");'
+      });
+      pageParam.tradeType = type;
+      $api.post('my/pay', pageParam, function(data){
+          api.execScript({
+              name: 'vip',
+              frameName: 'vip',
+              script: 'toast(3);'
+          });
+          api.execScript({
+              name: 'vip',
+              frameName: 'vip',
+              script: 'toast(2, "正在支付...");'
+          });
+          if(type === 'wechat_app'){
+              api.openFrame({
+                  name: 'wechat_app',
+                  url: data.wxPayWay,
+                  rect: { x: 0, y: 0, w: 0, h: 0 },
+              });
+          }else
+          if(type === 'alipay_wap'){
+              api.openFrame({
+                  name: 'alipay_wap',
+                  url: data.alipay_wap,
+                  rect: { x: 0, y: 0, w: 0, h: 0 },
+              });
+          }
+          api.addEventListener({
+              name: 'resume'
+          }, function(ret, err){
+              setTimeout(function() {
+                  api.execScript({
+                      name: 'vip',
+                      frameName: 'vip',
+                      script: 'toast(3);'
+                  });
+                  $api.get('my/pay_check/'+ data.sn, function(){
+                      api.execScript({
+                          name: 'vip',
+                          frameName: 'vip',
+                          script: 'toast(1, "支付成功");'
+                      });
+                      setTimeout(function(){
+                          //api.closeFrame();
+                          api.sendEvent({
+                              name: 'reload',
+                              extra: {
+                                  money: pageParam.num
+                              }
+                          });
+                      }, 2000);
+                  }, function(){
+                      api.execScript({
+                          name: 'vip',
+                          frameName: 'vip',
+                          script: 'toast(0, "支付失败");'
+                      });
+                  });
+              }, 3000);
+          });
+      }, function(data){
+          api.execScript({
+              name: 'vip',
+              frameName: 'vip',
+              script: 'toast(3);'
+          });
+          api.execScript({
+              name: 'vip',
+              frameName: 'vip',
+              script: 'toast(0, "'+ data.msg +'");'
+          });
+      });
+  }
+  function mqq(){
+      $api.get('app/kefu', function(qq){
+          location.href = encodeURI('mqq://im/chat?chat_type=wpa&uin='+ qq +'&version=1&src_type=web');
+      });
+  }
+  </script>
+  </html>

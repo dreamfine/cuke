@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    .aui-card-list-content{height: 10rem;}
+    </style>
+</head>
+<body>
+    <section id="videolist" class="aui-content">
+        <div v-for="v in it" class="aui-card-list">
+            <div class="aui-card-list-content" :id="'v'+v.id"></div>
+            <div class="aui-card-list-footer" v-text="v.title"></div>
+        </div>
+    </section>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/ckplayer.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+apiready = function(){
+    api.parseTapmode();
+    pullRefresh();
+    var videolist = new Vue({
+        el: '#videolist',
+        data: {
+            it: [],
+            offset: 0,
+            loader: '正在加载更多...'
+        },
+        mounted: function(){
+            this.add(); //初始化
+            loadMore(function(){videolist.add()}); //下拉加载
+        },
+        updated: function() {
+            this.it.forEach(function(v){
+                new ckplayer({
+                    container: '#v'+v.id,
+                    poster: v.picurl,
+                    video: v.videourl,
+                });
+            });
+        },
+        methods: {
+            add: function(){
+                var limit = 6;
+                var url = 'app/videolist/id,price,title,picurl,videourl/';
+                url += limit +'/'+ this.offset +'/id/RANDOM?price=0';
+                $api.get(url, function(json){
+                    videolist.offset += limit;
+                    videolist.it = videolist.it.concat(json);
+                    if(json.length < limit) videolist.loader = '已到底部';
+                });
+            },
+        }
+    });
+};
+</script>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>安卓x5相关推荐</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/swiper.css"/>
+    <style>
+    .aui-grid img{ height:1.4rem; display:inline }
+    .aui-grid [class*=aui-col-]{padding:0.5rem 0}
+    .aui-grid .aui-grid-label{margin-top:0}
+    </style>
+</head>
+<body>
+    <section id="videoinfo" class="aui-content" v-cloak>
+        <div class="aui-card-list aui-margin-b-0">
+            <div class="aui-card-list-header aui-card-list-user">
+                <div class="aui-card-list-user-name" v-text="it.title"></div>
+                <div class="aui-card-list-user-info">
+                    <div class="aui-row">
+                        <div class="aui-col-xs-9 aui-font-size-14">
+                            <marquee scrollamount="1" class="aui-text-danger" v-text="it.videotips"></marquee>
+                        </div>
+                        <div v-if="it.favor" class="aui-col-xs-3 aui-text-right aui-text-info" @click="addfavor(it.id)" tapmode>
+                            <i class="aui-iconfont aui-font-size-18 aui-icon-favorfill"></i>已收藏
+                        </div>
+                        <div v-else class="aui-col-xs-3 aui-text-right" @click="addfavor(it.id)" tapmode>
+                            <i class="aui-iconfont aui-font-size-18 aui-icon-favorfill"></i>收藏
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="swiper" class="swiper-container" v-cloak>
+        <div class="swiper-wrapper">
+            <div v-for="v in it" @click="openWin('web', {title:v.title,url:v.linkurl})" class="swiper-slide" tapmode>
+                <img :data-src="v.picurl" class="swiper-lazy" />
+            </div>
+        </div>
+        <div id="pagination" class="swiper-pagination"></div>
+    </section>
+    <div class="aui-tab aui-margin-t-10">
+        <div class="aui-tab-item aui-active">
+            <i class="aui-iconfont aui-icon-hotfill aui-font-size-18"></i> 推荐视频
+        </div>
+    </div>
+    <section class="aui-content aui-margin-5" id="videolist" v-cloak>
+        <div class="aui-row-padded">
+            <div v-for="v in it" class="aui-col-xs-6" @click="openPlayer(v.id,v.tid, v.price)" tapmode>
+                <div class="aui-card-list aui-border-t aui-border-b aui-margin-b-5">
+                    <div class="aui-card-list-content">
+                        <img :src="v.picurl" />
+                    </div>
+                    <div class="aui-card-list-header">
+                        <div class="aui-ellipsis-2" v-text="v.title"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="aui-card-list-footer aui-text-center" style="clear:both" v-text="loader"></div>
+    </section>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/swiper.js"></script>
+<script type="text/javascript" src="../script/echo.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+apiready = function(){
+    //点击收藏
+    var videoinfo = new Vue({
+        el: '#videoinfo',
+        data: {it: api.pageParam},
+        methods: {
+          addfavor: function(vid){
+              $api.post('my/favor/'+vid, function(data){
+                  videoinfo.it.favor = data;
+              }, function(json){
+                  if(json.code === -1)
+                  api.alert({ msg: '请先登陆' });
+              });
+          }
+        }
+    });
+    //轮播图
+    var swiper = new Vue({
+        el: '#swiper',
+        data: {it: []},
+        mounted: function(){
+            $api.get('app/adv/id,picurl,linkurl/5?type=4', function(json){
+                swiper.it = json;
+            });
+        },
+        updated: function(){
+            new Swiper('#swiper', {
+                loop: true,
+                autoplay: true,
+                pagination: {el: '#pagination'},
+                lazy: {loadPrevNext: true},
+            });
+        },
+    });
+    //相关视频推荐
+    var videolist = new Vue({
+        el: '#videolist',
+        data: {
+            it: [],
+            offset: 0,
+            loader: '正在加载更多...'
+        },
+        mounted: function(){
+            this.add(); //初始化
+            loadMore(function(){videolist.add()}); //下拉加载
+        },
+        updated: function(){
+            echo.init({offset: 500, throttle: 0}); //图片懒加载
+        },
+        methods: {
+            add: function(){
+                var limit = 6;
+                var url = 'app/videolist/id,tid,price,title,picurl/';
+                url += limit +'/'+ this.offset +'?tid='+ api.pageParam.tid;
+                $api.get(url, function(json){
+                    videolist.offset += limit;
+                    videolist.it = videolist.it.concat(json);
+                    if(json.length < limit) videolist.loader = '已到底部'
+                });
+            },
+        }
+    });
+};
+</script>
+</html>

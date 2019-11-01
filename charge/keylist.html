@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="css/v2/api.css" />
+</head>
+<body>
+    <header id="header" class="aui-bar aui-bar-nav">
+        <a class="aui-pull-left aui-btn" tapmode onclick="api.closeWin()">
+            <img src="image/v2/ic_back_yellow.png">
+        </a>
+        <div class="aui-title"></div>
+    </header>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+apiready = function(){
+    var header = $api.byId('header');
+    $api.fixStatusBar(header);
+    api.parseTapmode();
+    if(api.pageParam.keyword){
+        $api.text($api.dom(header, 'div.aui-title'), api.pageParam.keyword);
+    }else{
+        $api.text($api.dom(header, 'div.aui-title'), api.pageParam.title);
+    }
+    var header_h = $api.offset(header).h;
+    api.openFrame({
+        name: 'list',
+        url: 'widget://charge/html/list.html',
+        pageParam: api.pageParam,
+        rect: {x:0, y:header_h, w:'auto', h:api.frameHeight-header_h}
+    });
+};
+</script>
+</html>

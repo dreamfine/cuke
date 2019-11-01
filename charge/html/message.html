@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+      <title>title</title>
+      <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+  </head>
+  <body>
+      <section class="aui-content-padded" id="message">
+          <div class="aui-card-list" v-for="v in it">
+              <div class="aui-card-list-content-padded" v-text="v.remark"></div>
+              <div class="aui-card-list-footer" v-text="tb_date(v.createtime)"></div>
+          </div>
+          <div class="aui-card-list-footer aui-text-center" style="clear:both" v-text="loader"></div>
+      </section>
+  </body>
+  <script type="text/javascript" src="../script/api.js"></script>
+  <script type="text/javascript" src="../script/vue.js"></script>
+  <script type="text/javascript" src="../script/common.js"></script>
+  <script type="text/javascript">
+    apiready = function(){
+        api.parseTapmode();
+        pullRefresh();
+        var message = new Vue({
+            el: '#message',
+            data: {
+                it: [],
+                offset: 0,
+                loader: '正在加载更多...'
+            },
+            mounted: function(){
+                this.add(); //初始化
+                loadMore(function(){message.add()}); //下拉加载
+                //登入登出检测
+                LoginOut(function(){
+                    message.add();
+                }, function(){
+                    location.reload();
+                });
+            },
+            methods: {
+                add: function(){
+                    var limit = 6;
+                    var url = 'my/message/remark,createtime/';
+                    url += limit +'/'+ this.offset +'/createtime/desc';
+                    $api.get(url, function(json){
+                        message.offset += limit;
+                        message.it = message.it.concat(json);
+                        if(json.length < limit) message.loader = '已到底部'
+                    }, function(json){
+                        if(json.code === -1){
+                            message.loader = '请先登陆'
+                        }
+                    });
+                },
+            }
+        });
+        api.addEventListener({
+            name: 'reload'
+        }, function(ret, err){
+            if(ret){
+                location.reload();
+            }
+        });
+    };
+  </script>
+  </html>
